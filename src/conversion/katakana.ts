@@ -285,7 +285,7 @@ export function convertKanaToLatn(kana: string): string {
         for (const [key, value] of Object.entries(CONVERSION_TABLE)) {
           char = char.replace(value, key);
         }
-        console.log(char);
+        // console.log(char);
         for (const [key, value] of Object.entries(CODA_CONS)) {
           char = char.replace(value, key);
         }
