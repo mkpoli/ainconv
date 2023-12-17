@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 
 import typescript from '@rollup/plugin-typescript';
+import { terser } from 'rollup-plugin-terser';
 
 export default defineConfig({
   build: {
@@ -19,6 +20,7 @@ export default defineConfig({
           outDir: 'dist',
           rootDir: 'src',
         }),
+        terser(),
       ],
     },
   },

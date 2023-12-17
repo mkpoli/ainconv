@@ -10,6 +10,7 @@
   "devDependencies": {
     "@rollup/plugin-typescript": "^11.1.5",
     "bun-types": "^1.0.18",
+    "rollup-plugin-terser": "^7.0.2",
     "tslib": "^2.6.2",
     "typescript": "^5.2.2",
     "vite": "^5.0.0"
@@ -40,5 +41,16 @@
   "browser": "dist/index.umd.cjs",
   "files": [
     "dist"
-  ]
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "umd": "./dist/index.umd.js",
+      "browser": "./dist/index.umd.js",
+      "default": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./convert": "./dist/convert.d.ts"
+  }
 }
