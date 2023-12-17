@@ -1,5 +1,5 @@
 import { test, expect } from 'bun:test';
-import { detect } from '../src/index';
+import { convert, detect } from '../src/index';
 import {
   convertLatnToKana,
   convertLatnToCyrl,
@@ -66,9 +66,9 @@ test('Script Conversion (Latn -> Kana)', () => {
   for (const testCase of TEST_CASES) {
     const latn = testCase[0];
     const kana = testCase[2];
-    console.log('LATN = ', latn);
-    console.log('KANA = ', kana);
-    console.log('-> KANA = ', convertLatnToKana(latn));
+    // console.log('LATN = ', latn);
+    // console.log('KANA = ', kana);
+    // console.log('-> KANA = ', convertLatnToKana(latn));
     expect(convertLatnToKana(latn)).toBe(kana);
   }
 });
@@ -167,9 +167,9 @@ test('Script Conversion (Kana -> Latn)', () => {
   for (const testCase of TEST_CASES) {
     const kana = testCase[2];
     const latnLossy = testCase[5];
-    console.log('KANA = ', kana);
-    console.log('LATN = ', latnLossy);
-    console.log('-> LATN = ', convertKanaToLatn(kana));
+    // console.log('KANA = ', kana);
+    // console.log('LATN = ', latnLossy);
+    // console.log('-> LATN = ', convertKanaToLatn(kana));
     expect(convertKanaToLatn(kana)).toBe(latnLossy);
   }
 });
@@ -202,3 +202,10 @@ test('Script Conversion (Kana -> Hangul)', () => {
 
 // expect(convertLatnToCyrl('aynu')).toBe('айну');
 // expect(convertLatnToHang('aynu')).toBe('애누');
+
+test('Automatic Conversion (Latn -> Kana)', () => {
+  expect(convert('irankarapte', 'Latn', 'Kana')).toBe('イランカラㇷ゚テ');
+  expect(convert('イランカラㇷ゚テ', 'Kana')).toBe('irankarapte');
+  expect(convert('irankarapte', 'Latn')).toBe('イランカラㇷ゚テ');
+  expect(convert('イランカラㇷ゚テ', undefined, 'Latn')).toBe('irankarapte');
+});
