@@ -191,6 +191,15 @@ const applyVariants = (result: string, variantKeys: string[], index: number): st
 //   return applyVariants(target, variantKeys, 0);
 // }
 
+/**
+ * Convert Latin script to Katakana script.
+ *
+ * The original Lua module is available under the CC BY-SA 3.0 license
+ * https://ja.wiktionary.org/w/index.php?title=%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB:ain-kana-conv&oldid=1814571
+ *
+ * @param latn The Latin script string to convert.
+ * @returns The Katakana script string.
+ */
 export function convertLatnToKana(latn: string): string {
   latn = clean(latn);
 
@@ -272,6 +281,11 @@ const DIAGRAPHS: Record<string, string> = {
   ウイ: 'uy',
 };
 
+/**
+ * Convert Katakana script to Latin script.
+ * @param kana The Katakana string to convert.
+ * @returns The Latin string.
+ */
 export function convertKanaToLatn(kana: string): string {
   // console.log(new RegExp(`${Object.keys(DIAGRAPHS).join('|')}|(\\p{Script_Extensions=Katakana}\u309a?)`, 'u'));
   return (

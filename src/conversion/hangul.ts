@@ -88,7 +88,7 @@ const FINALS: Record<string, number> = {
 };
 
 /**
- * Convert Latin script to Hangul script
+ * Convert Latin script to Hangul script.
  *
  * Proposals
  * * https://reuni.hatenadiary.org/entry/20061029/1162102845
@@ -149,7 +149,7 @@ export function convertLatnToHang(latn: string): string {
 }
 
 /**
- * Convert Latin script to Hangul script
+ * Convert Latin script to Hangul script.
  *
  * Proposals
  * * https://reuni.hatenadiary.org/entry/20061029/1162102845

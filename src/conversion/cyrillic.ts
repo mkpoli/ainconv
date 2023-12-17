@@ -25,7 +25,7 @@ const LATN_2_CYRL_TABLE: Record<string, string> = {
 };
 
 /**
- * Convert Latin script to Cyrillic script
+ * Convert Latin script to Cyrillic script.
  *
  * Proposals
  * * https://note.com/qvarie/n/n5f935a37b354
@@ -67,6 +67,15 @@ export function convertLatnToCyrl(latn: string): string {
   return result.replace('’', '');
 }
 
+/**
+ * Convert Cyrillic script to Latin script.
+ *
+ * Proposals
+ * * https://note.com/qvarie/n/n5f935a37b354
+ *
+ * @param cyrl
+ * @returns
+ */
 export function convertCyrlToLatn(cyrl: string): string {
   let result = cyrl
     .replace('ъ', "'")
