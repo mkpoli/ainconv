@@ -1,5 +1,7 @@
 import { defineConfig } from 'vite';
 
+import typescript from '@rollup/plugin-typescript';
+
 export default defineConfig({
   build: {
     lib: {
@@ -11,6 +13,13 @@ export default defineConfig({
     rollupOptions: {
       external: [],
       output: {},
+      plugins: [
+        typescript({
+          declaration: true,
+          outDir: 'dist',
+          rootDir: 'src',
+        }),
+      ],
     },
   },
 });

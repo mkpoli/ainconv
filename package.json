@@ -8,7 +8,9 @@
     "build:watch": "tsc -w"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^11.1.5",
     "bun-types": "^1.0.18",
+    "tslib": "^2.6.2",
     "typescript": "^5.2.2",
     "vite": "^5.0.0"
   },
@@ -33,5 +35,8 @@
   "source": "src/index.ts",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
-  "browser": "dist/index.umd.cjs"
+  "browser": "dist/index.umd.cjs",
+  "files": [
+    "dist"
+  ]
 }
