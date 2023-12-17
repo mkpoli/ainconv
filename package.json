@@ -1,0 +1,16 @@
+{
+  "name": "ainconv",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && vite build",
+    "build:watch": "tsc -w"
+  },
+  "devDependencies": {
+    "bun-types": "^1.0.18",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.0"
+  },
+  "main": "src/index.ts"
+}
