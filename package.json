@@ -33,8 +33,10 @@
     "converter"
   ],
   "source": "src/index.ts",
-  "main": "dist/index.cjs",
+  "main": "dist/index.js",
   "module": "dist/index.js",
+  "commonjs": "dist/index.cjs",
+  "types": "dist/index.d.ts",
   "browser": "dist/index.umd.cjs",
   "files": [
     "dist"
