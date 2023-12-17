@@ -48,23 +48,21 @@ export function detect(text: string): Script | 'Mixed' | 'Unknown' {
   }
 }
 
-export function convert(
-  text: string,
-  from: Script | undefined | 'Mixed' = undefined,
-  to: Script | undefined = undefined
-) {
-  if (!from) {
-    const detected = detect(text);
-    if (detected === 'Mixed' && to === undefined) {
-      throw new Error('Cannot convert mixed script without specifying target script');
-    }
-    if (detected === 'Unknown') {
-      throw new Error('Cannot convert unknown script');
-    }
-    from = detected;
+// function convertSentence(sentence: string, converter: (word: string) => string): string {
+//   const words = sentence.split(/(\s+)/);
+//   return words.map(converter).join(' ');
+// }
+
+function selectWordConverter(from: Script | 'Unknown' | 'Mixed', to: Script | undefined): (word: string) => string {
+  if (from === 'Mixed') {
+    throw new Error('Cannot convert mixed script currently');
   }
 
-  if (!to) {
+  if (from === 'Unknown') {
+    throw new Error('Cannot convert unknown script');
+  }
+
+  if (to === undefined) {
     to = (
       {
         Latn: 'Kana',
@@ -72,59 +70,75 @@ export function convert(
         Cyrl: 'Latn',
         Hang: 'Latn',
         Mixed: 'Latn',
+        Unknown: 'Latn',
       } as const
     )[from];
   }
 
-  if (from === to) {
-    return text;
+  if (from === 'Latn' && to === 'Kana') {
+    return convertLatnToKana;
   }
 
-  if (from === 'Mixed') {
-    throw new Error('Cannot convert mixed script currently');
+  if (from === 'Latn' && to === 'Cyrl') {
+    return convertLatnToCyrl;
   }
 
-  const convertFunc = (
-    {
-      Latn: {
-        Kana: convertLatnToKana,
-        Cyrl: convertLatnToCyrl,
-        Hang: convertLatnToHang,
-      },
-      Kana: {
-        Latn: convertKanaToLatn,
-        Cyrl: convertKanaToCyrl,
-        Hang: convertKanaToHang,
-      },
-      Cyrl: {
-        Latn: convertCyrlToLatn,
-        Kana: convertCyrlToKana,
-        Hang: convertCyrlToHang,
-      },
-      Hang: {
-        Latn: convertHangToLatn,
-        Kana: convertHangToKana,
-        Cyrl: convertHangToCyrl,
-      },
-    } as const
-  )[from][to]!;
+  if (from === 'Latn' && to === 'Hang') {
+    return convertLatnToHang;
+  }
 
-  // const words = latn.toLowerCase().split(AINU_LATN_WORD_PATTERN).filter(Boolean);
-  // const convertedWords = words.map((word) => {
-  //   if (word.match(AINU_LATN_WORD_PATTERN)) {
-  //     try {
-  //       return convertWord(word);
-  //     } catch (e) {
-  //       console.error(e);
-  //       return word;
-  //     }
-  //   } else {
-  //     return word;
-  //   }
-  // });
+  if (from === 'Kana' && to === 'Latn') {
+    return convertKanaToLatn;
+  }
 
-  return text
-    .split(/\s+/)
-    .map((word) => convertFunc(word))
-    .join(' ');
+  if (from === 'Kana' && to === 'Cyrl') {
+    return convertKanaToCyrl;
+  }
+
+  if (from === 'Kana' && to === 'Hang') {
+    return convertKanaToHang;
+  }
+
+  if (from === 'Cyrl' && to === 'Latn') {
+    return convertCyrlToLatn;
+  }
+
+  if (from === 'Cyrl' && to === 'Kana') {
+    return convertCyrlToKana;
+  }
+
+  if (from === 'Cyrl' && to === 'Hang') {
+    return convertCyrlToHang;
+  }
+
+  if (from === 'Hang' && to === 'Latn') {
+    return convertHangToLatn;
+  }
+
+  if (from === 'Hang' && to === 'Kana') {
+    return convertHangToKana;
+  }
+
+  if (from === 'Hang' && to === 'Cyrl') {
+    return convertHangToCyrl;
+  }
+
+  return (word: string) => word;
+}
+
+/**
+ * Converts a string of Ainu word from one script to another. If the `from` script is not specified, it will be detected automatically. If the `to` script is not specified, it will be decided based on the `from` script, that is, all scripts except Latin will be converted to Latin, and Latin will be converted to Katakana. If `from` is equal to `to`, the original string will be returned.
+ *
+ * Mixed script is not supported yet. If the `from` script is `Mixed`, an error will be thrown for now.
+ *
+ * @param {string} text - The text string to be converted.
+ * @param {('Kana' | 'Latn' | 'Cyrl' | 'Hang' | 'Mixed')} [from] - The script to convert from.
+ * @param {('Kana' | 'Latn' | 'Cyrl' | 'Hang')} [to] - The script to convert to.
+ */
+export function convert(
+  text: string,
+  from: Script | undefined | 'Mixed' = undefined,
+  to: Script | undefined = undefined
+) {
+  return selectWordConverter(from ?? detect(text), to)(text);
 }
