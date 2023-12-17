@@ -41,7 +41,7 @@ import {
     convertLatnToKana,
     convertKanaToCyrl,
     // ...
-} from 'ainconv/convert';
+} from 'ainconv';
 convertLatnToKana('aynukotan'); // 'アイヌコタン'
 convertKanaToCyrl('アイヌコタン'); // аинукотан
 ```
@@ -61,7 +61,7 @@ console.log(detect('애누')); // 'Hang'
 
 #### Syllable Splitting
 ```javascript
-import { separate } from 'ainconv/syllable';
+import { separate } from 'ainconv';
 
 console.log(separate('eyaykosiramsuypa')); // [ 'e', 'yay', 'ko', 'si', 'ram', 'suy', 'pa' ]
 ```

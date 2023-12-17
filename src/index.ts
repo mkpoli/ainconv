@@ -12,6 +12,7 @@ import {
   convertLatnToHang,
   convertLatnToKana,
 } from './convert';
+import { separate } from './syllable';
 
 export type Script = 'Kana' | 'Latn' | 'Cyrl' | 'Hang';
 
@@ -142,3 +143,19 @@ export function convert(
 ) {
   return selectWordConverter(from ?? detect(text), to)(text);
 }
+
+export {
+  convertHangToLatn,
+  convertLatnToHang,
+  convertLatnToCyrl,
+  convertCyrlToLatn,
+  convertLatnToKana,
+  convertKanaToLatn,
+  convertKanaToCyrl,
+  convertCyrlToKana,
+  convertHangToCyrl,
+  convertCyrlToHang,
+  convertHangToKana,
+  convertKanaToHang,
+  separate,
+};
