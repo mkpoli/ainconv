@@ -12,5 +12,26 @@
     "typescript": "^5.2.2",
     "vite": "^5.0.0"
   },
-  "main": "src/index.ts"
+  "description": "Ainu writing system converter.",
+  "author": "mkpoli <mkpoli@mkpo.li>",
+  "license": "MIT",
+  "homepage": "https://github.com/mkpoli/ainconv",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mkpoli/ainconv.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mkpoli/ainconv/issues"
+  },
+  "keywords": [
+    "ainu",
+    "writing system",
+    "language",
+    "nlp",
+    "converter"
+  ],
+  "source": "src/index.ts",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "browser": "dist/index.umd.cjs"
 }
