@@ -99,7 +99,7 @@ const FINALS: Record<string, number> = {
  * @returns
  */
 export function convertLatnToHang(latn: string): string {
-  latn = clean(latn);
+  latn = clean(latn).toLowerCase();
 
   // TODO: Separate by word boundaries
 

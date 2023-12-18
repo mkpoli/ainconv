@@ -201,7 +201,7 @@ const applyVariants = (result: string, variantKeys: string[], index: number): st
  * @returns The Katakana script string.
  */
 export function convertLatnToKana(latn: string): string {
-  latn = clean(latn);
+  latn = clean(latn).toLowerCase();
 
   const syllables = separate(latn);
   let result = syllables

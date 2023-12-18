@@ -60,14 +60,6 @@ const TEST_CASES = [
     '거얘고시람쉬바',
     'keyaikosiramsuipa',
   ],
-  [
-    'Ieonnekunnep',
-    ['i', 'e', 'on', 'ne', 'kun', 'nep'],
-    'イエオンネクンネㇷ゚',
-    'иэоннэкуннэп',
-    '이어온너군넙',
-    'ieonnekunnep',
-  ],
 ] as const;
 
 test('Script Conversion (Latn -> Kana)', () => {
@@ -216,6 +208,34 @@ test('Automatic Conversion (Latn -> Kana)', () => {
   expect(convert('イランカラㇷ゚テ', 'Kana')).toBe('irankarapte');
   expect(convert('irankarapte', 'Latn')).toBe('イランカラㇷ゚テ');
   expect(convert('イランカラㇷ゚テ', undefined, 'Latn')).toBe('irankarapte');
+});
+
+const LETTER_CASING_TEST_CASES = [
+  {
+    latn: 'Aynu',
+    cyrl: 'Айну',
+    kana: 'アイヌ',
+    hang: '애누',
+    latnLossy: 'ainu',
+  },
+  {
+    latn: 'Ieonnekunnep',
+    cyrl: 'Иэоннэкуннэп',
+    kana: 'イエオンネクンネㇷ゚',
+    hang: '이어온너군넙',
+    latnLossy: 'ieonnekunnep',
+  },
+] as const;
+
+test('Keep Letter Casing (Latn <-> Cyrl)', () => {
+  for (const testCase of LETTER_CASING_TEST_CASES) {
+    expect(convert(testCase.latn, 'Latn', 'Cyrl')).toBe(testCase.cyrl);
+    expect(convert(testCase.cyrl, 'Cyrl', 'Latn')).toBe(testCase.latn);
+    expect(convert(testCase.latn, 'Latn', 'Kana')).toBe(testCase.kana);
+    expect(convert(testCase.kana, 'Kana', 'Latn')).toBe(testCase.latnLossy);
+    expect(convert(testCase.latn, 'Latn', 'Hang')).toBe(testCase.hang);
+    expect(convert(testCase.hang, 'Hang', 'Latn')).toBe(testCase.latn.toLowerCase());
+  }
 });
 
 test('Special Case (with "=")', () => {
