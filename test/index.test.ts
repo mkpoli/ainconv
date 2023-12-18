@@ -40,6 +40,7 @@ test('Syllable Separation', () => {
 });
 
 const TEST_CASES = [
+  ['', [], '', '', '', ''],
   ['aynu', ['ay', 'nu'], 'アイヌ', 'айну', '애누', 'ainu'],
   ['itak', ['i', 'tak'], 'イタㇰ', 'итак', '이닥', 'itak'],
   ['aynuitak', ['ay', 'nu', 'i', 'tak'], 'アイヌイタㇰ', 'айнуитак', '애누이닥', 'ainuitak'],

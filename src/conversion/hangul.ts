@@ -101,6 +101,10 @@ const FINALS: Record<string, number> = {
 export function convertLatnToHang(latn: string): string {
   latn = clean(latn).toLowerCase();
 
+  if (latn.length === 0) {
+    return '';
+  }
+
   // TODO: Separate by word boundaries
 
   // Separate by syllables
