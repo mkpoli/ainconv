@@ -9,5 +9,8 @@ export const CONSONANTS = 'ptckmnshwry’';
  */
 
 export function clean(text: string) {
-  return text.replace(/-=.,/gu, '').normalize('NFKC').toLowerCase();
+  return text
+    .replace(/[-=.,]/gu, '')
+    .normalize('NFKC')
+    .toLowerCase();
 }
