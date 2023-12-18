@@ -157,10 +157,10 @@ const VARIANT_TABLE: Record<string, string[]> = {
   ㇰコ: ['ッコ'],
   ィ: ['イ'],
   ゥ: ['ウ'],
-  ㇻ: ['ㇽ'],
-  ㇼ: ['ㇽ'],
-  ㇾ: ['ㇽ'],
-  ㇿ: ['ㇽ'],
+  // ㇻ: ['ㇽ'],
+  // ㇼ: ['ㇽ'],
+  // ㇾ: ['ㇽ'],
+  // ㇿ: ['ㇽ'],
 };
 
 // function convertLatn2Kana(latn: string) {}
