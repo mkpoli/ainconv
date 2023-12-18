@@ -217,3 +217,30 @@ test('Automatic Conversion (Latn -> Kana)', () => {
   expect(convert('irankarapte', 'Latn')).toBe('イランカラㇷ゚テ');
   expect(convert('イランカラㇷ゚テ', undefined, 'Latn')).toBe('irankarapte');
 });
+
+test('Special Case (with "=")', () => {
+  const CASE = {
+    latn: 'a=hunar',
+    syllables: ['a', 'hu', 'nar'],
+    kana: 'アフナㇻ',
+    cyrl: 'ахунар',
+    hang: '아후날',
+    latnLossy: 'ahunar',
+  } as const;
+
+  console.log('LATN = ', CASE.latn);
+  console.log('KANA = ', CASE.kana);
+  console.log('-> KANA = ', convert(CASE.latn, 'Latn', 'Kana'));
+  expect(convert(CASE.latn, 'Latn', 'Kana')).toBe(CASE.kana);
+  expect(convert(CASE.latn, 'Latn', 'Cyrl')).toBe(CASE.cyrl);
+  expect(convert(CASE.latn, 'Latn', 'Hang')).toBe(CASE.hang);
+  expect(convert(CASE.kana, 'Kana', 'Latn')).toBe(CASE.latnLossy);
+  expect(convert(CASE.cyrl, 'Cyrl', 'Latn')).toBe(CASE.latnLossy);
+  expect(convert(CASE.hang, 'Hang', 'Latn')).toBe(CASE.latnLossy);
+  expect(convert(CASE.kana, 'Kana', 'Latn')).toBe(CASE.latnLossy);
+  expect(convert(CASE.kana, 'Kana', 'Cyrl')).toBe(CASE.cyrl);
+  expect(convert(CASE.kana, 'Kana', 'Hang')).toBe(CASE.hang);
+  expect(convert(CASE.cyrl, 'Cyrl', 'Latn')).toBe(CASE.latnLossy);
+  expect(convert(CASE.cyrl, 'Cyrl', 'Kana')).toBe(CASE.kana);
+  expect(convert(CASE.cyrl, 'Cyrl', 'Hang')).toBe(CASE.hang);
+});
