@@ -60,6 +60,14 @@ const TEST_CASES = [
     '거얘고시람쉬바',
     'keyaikosiramsuipa',
   ],
+  [
+    'Ieonnekunnep',
+    ['i', 'e', 'on', 'ne', 'kun', 'nep'],
+    'イエオンネクンネㇷ゚',
+    'иэоннэкуннэп',
+    '이어온너군넙',
+    'ieonnekunnep',
+  ],
 ] as const;
 
 test('Script Conversion (Latn -> Kana)', () => {
@@ -91,7 +99,7 @@ test('Script Conversion (Cyrl -> Latn)', () => {
     // console.log('CYRL = ', cyrl);
     // console.log('LATN = ', latn);
     // console.log('-> LATN = ', convertCyrlToLatn(cyrl));
-    expect(convertCyrlToLatn(cyrl)).toBe(latn);
+    expect(convertCyrlToLatn(cyrl)).toBe(latn.toLowerCase());
   }
 });
 
@@ -99,9 +107,9 @@ test('Script Conversion (Latn -> Hang)', () => {
   for (const testCase of TEST_CASES) {
     const latn = testCase[0];
     const hang = testCase[4];
-    // console.log(latn);
-    // console.log(hang);
-    // console.log(convertLatnToHang(latn));
+    console.log(latn);
+    console.log(hang);
+    console.log(convertLatnToHang(latn));
     expect(convertLatnToHang(latn)).toBe(hang);
   }
 });
@@ -113,7 +121,7 @@ test('Script Conversion (Hang -> Latn)', () => {
     // console.log(hang);
     // console.log(latn);
     // console.log(convertHangToLatn(hang));
-    expect(convertHangToLatn(hang)).toBe(latn);
+    expect(convertHangToLatn(hang)).toBe(latn.toLowerCase());
   }
 });
 
@@ -170,7 +178,7 @@ test('Script Conversion (Kana -> Latn)', () => {
     // console.log('KANA = ', kana);
     // console.log('LATN = ', latnLossy);
     // console.log('-> LATN = ', convertKanaToLatn(kana));
-    expect(convertKanaToLatn(kana)).toBe(latnLossy);
+    expect(convertKanaToLatn(kana)).toBe(latnLossy.toLowerCase());
   }
 });
 

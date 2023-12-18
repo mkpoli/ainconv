@@ -1,3 +1,5 @@
+import { clean } from './latin';
+
 const LATN_2_CYRL_TABLE: Record<string, string> = {
   a: 'а',
   i: 'и',
@@ -34,7 +36,7 @@ const LATN_2_CYRL_TABLE: Record<string, string> = {
  * @returns
  */
 export function convertLatnToCyrl(latn: string): string {
-  let result = latn;
+  let result = clean(latn);
 
   // Convert multi-character sequences first
   const multiCharKeys = [

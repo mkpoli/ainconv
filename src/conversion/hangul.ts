@@ -1,4 +1,4 @@
-import { VOWELS } from './latin';
+import { VOWELS, clean } from './latin';
 import { separate } from '../syllable';
 
 const LATN_2_HANG_TABLE: Record<string, string> = {
@@ -99,6 +99,8 @@ const FINALS: Record<string, number> = {
  * @returns
  */
 export function convertLatnToHang(latn: string): string {
+  latn = clean(latn);
+
   // TODO: Separate by word boundaries
 
   // Separate by syllables
