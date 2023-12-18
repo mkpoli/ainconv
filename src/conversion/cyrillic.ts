@@ -26,6 +26,14 @@ const LATN_2_CYRL_TABLE: Record<string, string> = {
   "'": 'ъ',
 };
 
+const ACCENTED_MAP: [string, string][] = [
+  ['á', 'а́'],
+  ['í', 'и́'],
+  ['ú', 'у́'],
+  ['é', 'э́'],
+  ['ó', 'о́'],
+];
+
 /**
  * Convert Latin script to Cyrillic script.
  *
@@ -66,6 +74,10 @@ export function convertLatnToCyrl(latn: string): string {
     }
   }
 
+  for (const [accented, unaccented] of ACCENTED_MAP) {
+    result = result.replace(accented, unaccented);
+  }
+
   return result.replace('’', '');
 }
 
@@ -95,6 +107,10 @@ export function convertCyrlToLatn(cyrl: string): string {
     const regexUppercase = new RegExp(key.toUpperCase(), 'g');
     result = result.replace(regex, latn);
     result = result.replace(regexUppercase, latnUppercase);
+  }
+
+  for (const [accented, unaccented] of ACCENTED_MAP) {
+    result = result.replace(unaccented, accented);
   }
 
   // Convert the remaining characters
