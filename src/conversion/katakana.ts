@@ -155,12 +155,6 @@ const VARIANT_TABLE: Record<string, string[]> = {
   // ㇿ: ['ㇽ'],
 };
 
-// function convertLatn2Kana(latn: string) {}
-
-type StringMap = { [key: string]: string | undefined };
-
-const inKeys = (key: string, obj: StringMap): boolean => Object.prototype.hasOwnProperty.call(obj, key);
-
 const applyVariants = (result: string, variantKeys: string[], index: number): string[] => {
   if (index > variantKeys.length) {
     return [result];
@@ -228,7 +222,7 @@ export function convertLatnToKana(latn: string): string {
       // let accentedFlag = false;
       const nucleus = remains[remains.length - 1];
 
-      if (inKeys(nucleus, ACCENT_CONVERSION_TABLE)) {
+      if (nucleus in ACCENT_CONVERSION_TABLE) {
         // accentedFlag = true;
         remains = remains.slice(0, -1) + ACCENT_CONVERSION_TABLE[nucleus];
       }
@@ -236,9 +230,9 @@ export function convertLatnToKana(latn: string): string {
       if (remains.startsWith('’')) {
         remains = remains.slice(1);
       }
-      if (inKeys(remains, CONVERSION_TABLE)) {
+      if (remains in CONVERSION_TABLE) {
         remains = CONVERSION_TABLE[remains]!;
-      } else if (inKeys(remains.toLowerCase(), CONVERSION_TABLE)) {
+      } else if (remains.toLowerCase() in CONVERSION_TABLE) {
         remains = CONVERSION_TABLE[remains.toLowerCase()]!;
       } else {
         throw new Error(`cannot find katakana for CV pair: ‘${remains}’`);
