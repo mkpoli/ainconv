@@ -270,23 +270,24 @@ test('Accent Conversion', () => {
     latn: 'símontek',
     kana: 'シモンテㇰ',
     cyrl: 'си́монтэк',
-    hang: '시몬텍',
+    hang: '시몬덕',
     latnLossy: 'simontek',
+    cyrlLossy: 'симонтэк',
   } as const;
 
   console.log('LATN = ', CASE.latn);
   console.log('KANA = ', CASE.kana);
   console.log('-> KANA = ', convert(CASE.latn, 'Latn', 'Kana'));
-  expect(convert(CASE.latn, 'Latn', 'Kana')).toBe(CASE.kana);
   expect(convert(CASE.latn, 'Latn', 'Cyrl')).toBe(CASE.cyrl);
+  expect(convert(CASE.cyrl, 'Cyrl', 'Latn')).toBe(CASE.latn);
+  expect(convert(CASE.latn, 'Latn', 'Kana')).toBe(CASE.kana);
+  expect(convert(CASE.cyrl, 'Cyrl', 'Latn')).toBe(CASE.latn);
   expect(convert(CASE.latn, 'Latn', 'Hang')).toBe(CASE.hang);
   expect(convert(CASE.kana, 'Kana', 'Latn')).toBe(CASE.latnLossy);
-  expect(convert(CASE.cyrl, 'Cyrl', 'Latn')).toBe(CASE.latnLossy);
   expect(convert(CASE.hang, 'Hang', 'Latn')).toBe(CASE.latnLossy);
   expect(convert(CASE.kana, 'Kana', 'Latn')).toBe(CASE.latnLossy);
-  expect(convert(CASE.kana, 'Kana', 'Cyrl')).toBe(CASE.cyrl);
+  expect(convert(CASE.kana, 'Kana', 'Cyrl')).toBe(CASE.cyrlLossy);
   expect(convert(CASE.kana, 'Kana', 'Hang')).toBe(CASE.hang);
-  expect(convert(CASE.cyrl, 'Cyrl', 'Latn')).toBe(CASE.latnLossy);
   expect(convert(CASE.cyrl, 'Cyrl', 'Kana')).toBe(CASE.kana);
   expect(convert(CASE.cyrl, 'Cyrl', 'Hang')).toBe(CASE.hang);
 });

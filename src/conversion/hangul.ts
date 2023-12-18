@@ -1,4 +1,4 @@
-import { VOWELS, clean } from './latin';
+import { ACCENT_CONVERSION_TABLE, VOWELS, clean } from './latin';
 import { separate } from '../syllable';
 
 const LATN_2_HANG_TABLE: Record<string, string> = {
@@ -104,8 +104,13 @@ export function convertLatnToHang(latn: string): string {
   // TODO: Separate by word boundaries
 
   // Separate by syllables
-  const syllables = separate(latn);
+  let syllables = separate(latn);
   // console.log('syllables', syllables);
+
+  for (const [accented, unaccented] of Object.entries(ACCENT_CONVERSION_TABLE)) {
+    syllables = syllables.map((syllable) => syllable.replace(accented, unaccented));
+  }
+
   const convertedSyllables = syllables
     .map((syllable) => {
       if (VOWELS.includes(syllable[0]) || syllable[0] === 'y') {
