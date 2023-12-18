@@ -8,15 +8,7 @@ import { separate } from '../syllable';
 
 // const AINU_LATN_WORD_PATTERN = /([a-zA-Z\p’'\-=∅ø]+)/;
 
-import { clean } from './latin';
-
-const ACCENT_CONVERSION_TABLE: Record<string, string> = {
-  á: 'a',
-  í: 'i',
-  ú: 'u',
-  é: 'e',
-  ó: 'o',
-};
+import { clean, ACCENT_CONVERSION_TABLE } from './latin';
 
 const CONVERSION_TABLE: Record<string, string> = {
   a: 'ア',
