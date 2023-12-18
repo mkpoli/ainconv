@@ -263,10 +263,10 @@ export function convertLatnToKana(latn: string): string {
 
   // Postprocess
   for (const [variant, replacement] of Object.entries(VARIANT_TABLE)) {
-    result = result.replace(variant, replacement[0]);
+    result = result.replaceAll(variant, replacement[0]);
   }
 
-  return result.replace('ィ', 'イ').replace('ゥ', 'ウ');
+  return result;
   // TODO: Make configurable
 }
 
