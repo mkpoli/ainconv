@@ -6,6 +6,7 @@
 ![GitHub](https://img.shields.io/github/license/mkpoli/ainconv)
 
 ## Overview
+
 This npm package provides a comprehensive set of functions for converting text between different writing systems of the [Ainu language](https://en.wikipedia.org/wiki/Ainu_language).
 
 Currently, Latin (Romanization), Katakana, Cyrillic and Hangul scripts are supported. We are also planning to convert between different romanization systems and Katakana variants. Currently only the more adopted version of Latin script and lossy Katakana script are supported. 
@@ -13,18 +14,22 @@ Currently, Latin (Romanization), Katakana, Cyrillic and Hangul scripts are suppo
 Sentence conversion is planned to be supported in the future. For now, only well-formed single word is accepted. The converted string are always in lower case.
 
 ### Important Note
+
 Conversion between Latin, Cyrillic and Hangul script are lossless, however, conversion between Katakana and other scripts are lossy. This means that converting from Katakana to other scripts and then back to Katakana may not give the original string and the result may be ambiguous or even incorrect.
 
-This is because the Katakana script used broadly for the Ainu language is intrinsically ambiguous. For example, it does not distinguish between *tow* and *tu* (both *トゥ*), *iw* and *i.u* (both *イウ*), *ay* and *ai* (both *アイ*), etc. Some alternative Katakana scripts are proposed to solve this problem, but none of them are widely adopted. We are planning to support some of these alternative scripts in the future.
+This is because the Katakana script used broadly for the Ainu language is intrinsically ambiguous. For example, it does not distinguish between *tow* and *tu* (both *トゥ*), *iw* and *i.u* (both *イウ*), *ay* and *a.i* (both *アイ*), etc. Some alternative Katakana scripts are proposed to solve this problem, but none of them are widely adopted. We are planning to support some of these alternative scripts in the future.
 
 ## Installation
+
 Install the package using npm (or bun, yarn, pnpm, etc.)
 ```bash
 npm install ainconv
 ```
 
 ## Usage
+
 ### Word Conversion
+
 ```javascript
 import { convert } from 'ainconv';
 
@@ -49,6 +54,7 @@ convertKanaToCyrl('アイヌコタン'); // аинукотан
 ### Extra Functionality
 
 #### Script Detection
+
 Detect the script of a given string.
 ```javascript
 import { detect } from 'ainconv';
@@ -60,6 +66,7 @@ console.log(detect('애누')); // 'Hang'
 ```
 
 #### Syllable Splitting
+
 ```javascript
 import { separate } from 'ainconv';
 
@@ -80,4 +87,10 @@ bun test
 ```
 
 ## License
+
 [MIT License](LICENSE) (c) 2023 mkpoli
+
+## See also
+
+* [ainconv - crates.io](https://crates.io/crates/ainconv): The Rust implementation of this package
+* [Module:ain-kana-conv - ウィクショナリー日本語版](https://ja.wiktionary.org/wiki/%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB:ain-kana-conv): The original Lua Scribunto module in the Japanese Wiktionary
