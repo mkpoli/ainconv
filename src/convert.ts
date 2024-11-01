@@ -1,14 +1,14 @@
-import { convertLatnToKana, convertKanaToLatn } from './conversion/katakana';
-import { convertLatnToCyrl, convertCyrlToLatn } from './conversion/cyrillic';
-import { convertHangToLatn, convertLatnToHang } from './conversion/hangul';
+import { convertCyrlToLatn, convertLatnToCyrl } from "./conversion/cyrillic";
+import { convertHangToLatn, convertLatnToHang } from "./conversion/hangul";
+import { convertKanaToLatn, convertLatnToKana } from "./conversion/katakana";
 
 export {
-  convertHangToLatn,
-  convertLatnToHang,
-  convertLatnToCyrl,
-  convertCyrlToLatn,
-  convertLatnToKana,
-  convertKanaToLatn,
+	convertHangToLatn,
+	convertLatnToHang,
+	convertLatnToCyrl,
+	convertCyrlToLatn,
+	convertLatnToKana,
+	convertKanaToLatn,
 };
 
 /**
@@ -17,7 +17,7 @@ export {
  * @returns The Cyrillic string.
  */
 export function convertKanaToCyrl(kana: string): string {
-  return convertLatnToCyrl(convertKanaToLatn(kana));
+	return convertLatnToCyrl(convertKanaToLatn(kana));
 }
 
 /**
@@ -26,7 +26,7 @@ export function convertKanaToCyrl(kana: string): string {
  * @returns The Kana string.
  */
 export function convertCyrlToKana(cyrl: string): string {
-  return convertLatnToKana(convertCyrlToLatn(cyrl));
+	return convertLatnToKana(convertCyrlToLatn(cyrl));
 }
 
 /**
@@ -35,7 +35,7 @@ export function convertCyrlToKana(cyrl: string): string {
  * @returns The Cyrillic string.
  */
 export function convertHangToCyrl(hang: string): string {
-  return convertLatnToCyrl(convertHangToLatn(hang));
+	return convertLatnToCyrl(convertHangToLatn(hang));
 }
 
 /**
@@ -44,7 +44,7 @@ export function convertHangToCyrl(hang: string): string {
  * @returns The Hangul string.
  */
 export function convertCyrlToHang(cyrl: string): string {
-  return convertLatnToHang(convertCyrlToLatn(cyrl));
+	return convertLatnToHang(convertCyrlToLatn(cyrl));
 }
 
 /**
@@ -53,7 +53,7 @@ export function convertCyrlToHang(cyrl: string): string {
  * @returns The Kana string.
  */
 export function convertHangToKana(hang: string): string {
-  return convertLatnToKana(convertHangToLatn(hang));
+	return convertLatnToKana(convertHangToLatn(hang));
 }
 
 /**
@@ -62,5 +62,5 @@ export function convertHangToKana(hang: string): string {
  * @returns The Hangul string.
  */
 export function convertKanaToHang(kana: string): string {
-  return convertLatnToHang(convertKanaToLatn(kana));
+	return convertLatnToHang(convertKanaToLatn(kana));
 }
