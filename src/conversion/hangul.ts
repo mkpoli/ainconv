@@ -99,16 +99,16 @@ const FINALS: Record<string, number> = {
  * @returns
  */
 export function convertLatnToHang(latn: string): string {
-	latn = clean(latn).toLowerCase();
+	const cleanedLatn = clean(latn).toLowerCase();
 
-	if (latn.length === 0) {
+	if (cleanedLatn.length === 0) {
 		return "";
 	}
 
 	// TODO: Separate by word boundaries
 
 	// Separate by syllables
-	let syllables = separate(latn);
+	let syllables = separate(cleanedLatn);
 	// console.log('syllables', syllables);
 
 	for (const [accented, unaccented] of Object.entries(
@@ -121,20 +121,24 @@ export function convertLatnToHang(latn: string): string {
 
 	const convertedSyllables = syllables
 		.map((syllable) => {
+			let result = syllable;
+
 			if (VOWELS.includes(syllable[0]) || syllable[0] === "y") {
-				syllable = "’" + syllable;
+				result = `’${syllable}`; // TODO: use straight apostrophe
 			}
 			// if (syllable.charAt(-1) === 'y') {
 			//   syllable = LATN_2_HANG_TABLE[syllable.slice(0, -1)] + 'ㅣ';
-			return [...syllable].map((char) => LATN_2_HANG_TABLE[char]).join("");
+			return [...result].map((char) => LATN_2_HANG_TABLE[char]).join("");
 		})
 		.map((syllable) => {
+			let result = syllable;
+
 			// console.log('syllable', syllable);
 			for (const [key, value] of Object.entries(HANG_VOWEL_COMBINATION_TABLE)) {
-				syllable = syllable.replace(key, value);
+				result = result.replace(key, value);
 			}
 			// Convert vowel combinations
-			return syllable.replace(/ㅣㅣ/g, "ㅣ");
+			return result.replace(/ㅣㅣ/g, "ㅣ");
 		});
 
 	// console.log('convertedSyllables', convertedSyllables);
@@ -219,33 +223,37 @@ export function convertHangToLatn(hang: string): string {
 			return initial + medial + final;
 		})
 		.map((hangul) => {
+			let result = hangul;
 			// console.log('hangulB', hangul);
 			for (const [key, value] of Object.entries(HANG_VOWEL_COMBINATION_TABLE)) {
-				hangul = hangul.replace(value, key);
+				result = result.replace(value, key);
 			}
 			// console.log('hangulA', hangul);
-			return hangul;
+			return result;
 		});
 
 	// console.log('decomposed', decomposed);
 
 	const latin = decomposed
 		.map((hangul) => {
+			let result = hangul;
+
 			for (const [key, value] of Object.entries(LATN_2_HANG_TABLE)) {
-				hangul = hangul.replace(value, key);
+				result = result.replace(value, key);
 			}
-			return hangul;
+			return result;
 		})
 		.map((latn) => {
+			let result = latn;
 			// console.log('latn:', latn);
 
 			// ’iV -> yV
-			latn = latn.replace(/’i(?=[aeiou])/, "y");
-			// console.log('’iV->yV :', latn);
+			result = result.replace(/’i(?=[aeiou])/, "y");
+			// console.log('’iV->yV :', result);
 			// Vi -> Vy
-			latn = latn.replace(/(?<=[aeiou])i/, "y");
-			// console.log('Vi->Vy :', latn);
-			return latn;
+			result = result.replace(/(?<=[aeiou])i/, "y");
+			// console.log('Vi->Vy :', result);
+			return result;
 		});
 
 	// console.log('latin', latin);

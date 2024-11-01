@@ -36,17 +36,22 @@ export function detect(text: string): Script | "Mixed" | "Unknown" {
 
 	if ([hasLatin, hasCyrillic, hasKana].filter(Boolean).length > 1) {
 		return "Mixed";
-	} else if (hasKana) {
-		return "Kana";
-	} else if (hasCyrillic) {
-		return "Cyrl";
-	} else if (hasHangul) {
-		return "Hang";
-	} else if (hasLatin) {
-		return "Latn";
-	} else {
-		return "Unknown";
 	}
+
+	if (hasKana) {
+		return "Kana";
+	}
+	if (hasCyrillic) {
+		return "Cyrl";
+	}
+	if (hasHangul) {
+		return "Hang";
+	}
+	if (hasLatin) {
+		return "Latn";
+	}
+
+	return "Unknown";
 }
 
 // function convertSentence(sentence: string, converter: (word: string) => string): string {
@@ -66,8 +71,9 @@ function selectWordConverter(
 		throw new Error("Cannot convert unknown script");
 	}
 
-	if (to === undefined) {
-		to = (
+	const target =
+		to ??
+		(
 			{
 				Latn: "Kana",
 				Kana: "Latn",
@@ -77,53 +83,52 @@ function selectWordConverter(
 				Unknown: "Latn",
 			} as const
 		)[from];
-	}
 
-	if (from === "Latn" && to === "Kana") {
+	if (from === "Latn" && target === "Kana") {
 		return convertLatnToKana;
 	}
 
-	if (from === "Latn" && to === "Cyrl") {
+	if (from === "Latn" && target === "Cyrl") {
 		return convertLatnToCyrl;
 	}
 
-	if (from === "Latn" && to === "Hang") {
+	if (from === "Latn" && target === "Hang") {
 		return convertLatnToHang;
 	}
 
-	if (from === "Kana" && to === "Latn") {
+	if (from === "Kana" && target === "Latn") {
 		return convertKanaToLatn;
 	}
 
-	if (from === "Kana" && to === "Cyrl") {
+	if (from === "Kana" && target === "Cyrl") {
 		return convertKanaToCyrl;
 	}
 
-	if (from === "Kana" && to === "Hang") {
+	if (from === "Kana" && target === "Hang") {
 		return convertKanaToHang;
 	}
 
-	if (from === "Cyrl" && to === "Latn") {
+	if (from === "Cyrl" && target === "Latn") {
 		return convertCyrlToLatn;
 	}
 
-	if (from === "Cyrl" && to === "Kana") {
+	if (from === "Cyrl" && target === "Kana") {
 		return convertCyrlToKana;
 	}
 
-	if (from === "Cyrl" && to === "Hang") {
+	if (from === "Cyrl" && target === "Hang") {
 		return convertCyrlToHang;
 	}
 
-	if (from === "Hang" && to === "Latn") {
+	if (from === "Hang" && target === "Latn") {
 		return convertHangToLatn;
 	}
 
-	if (from === "Hang" && to === "Kana") {
+	if (from === "Hang" && target === "Kana") {
 		return convertHangToKana;
 	}
 
-	if (from === "Hang" && to === "Cyrl") {
+	if (from === "Hang" && target === "Cyrl") {
 		return convertHangToCyrl;
 	}
 

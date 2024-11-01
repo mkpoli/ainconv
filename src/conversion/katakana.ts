@@ -10,7 +10,7 @@ import { separate } from "../syllable";
 
 import { ACCENT_CONVERSION_TABLE, clean } from "./latin";
 
-const CONVERSION_TABLE: Record<string, string> = {
+const CONVERSION_TABLE = {
 	a: "ア",
 	i: "イ",
 	u: "ウ",
@@ -80,9 +80,9 @@ const CONVERSION_TABLE: Record<string, string> = {
 	wo: "ヲ",
 	nn: "ン",
 	tt: "ッ",
-};
+} as const;
 
-const CODA_CONS: Record<string, string> = {
+const CODA_CONS = {
 	w: "ゥ",
 	y: "ィ",
 	m: "ㇺ",
@@ -94,7 +94,7 @@ const CODA_CONS: Record<string, string> = {
 	t: "ッ",
 	T: "ㇳ",
 	k: "ㇰ",
-};
+} as const;
 // const CODA_VARA: Record<string, Record<string, string>> = {
 //   "r": {
 //     "a": "ㇻ", "i": "ㇼ", "u": "ㇽ", "e": "ㇾ", "o": "ㇿ"
@@ -107,7 +107,7 @@ const CODA_CONS: Record<string, string> = {
 //   }
 // };
 
-const CODA_VARA: Record<string, Record<string, string>> = {
+const CODA_VARA = {
 	r: {
 		a: "ㇻ",
 		i: "ㇼ",
@@ -129,9 +129,9 @@ const CODA_VARA: Record<string, Record<string, string>> = {
 		e: "ㇸ",
 		o: "ㇹ",
 	},
-};
+} as const;
 
-const VARIANT_TABLE: Record<string, string[]> = {
+const VARIANT_TABLE = {
 	// "ト゚": ["ツ゚", "トゥ"],
 	ㇴ: ["ン"],
 	ヱ: ["ウェ"],
@@ -153,34 +153,34 @@ const VARIANT_TABLE: Record<string, string[]> = {
 	// ㇼ: ['ㇽ'],
 	// ㇾ: ['ㇽ'],
 	// ㇿ: ['ㇽ'],
-};
+} as const;
 
-const applyVariants = (
-	result: string,
-	variantKeys: string[],
-	index: number,
-): string[] => {
-	if (index > variantKeys.length) {
-		return [result];
-	}
+// const applyVariants = (
+// 	result: string,
+// 	variantKeys: string[],
+// 	index: number,
+// ): string[] => {
+// 	if (index > variantKeys.length) {
+// 		return [result];
+// 	}
 
-	const original = variantKeys[index];
-	const variations = VARIANT_TABLE[original]!;
-	const allResults = [
-		result,
-		...variations.map((variation) => result.replace(original, variation)),
-	];
+// 	const original = variantKeys[index];
+// 	const variations = VARIANT_TABLE[original]!;
+// 	const allResults = [
+// 		result,
+// 		...variations.map((variation) => result.replace(original, variation)),
+// 	];
 
-	let finalResults: string[] = [];
-	allResults.forEach((res) => {
-		finalResults = [
-			...finalResults,
-			...applyVariants(res, variantKeys, index + 1),
-		];
-	});
+// 	let finalResults: string[] = [];
+// 	allResults.forEach((res) => {
+// 		finalResults = [
+// 			...finalResults,
+// 			...applyVariants(res, variantKeys, index + 1),
+// 		];
+// 	});
 
-	return finalResults;
-};
+// 	return finalResults;
+// };
 
 // const generateVariants = (target: string): string[] => {
 //   const variantKeys = Object.keys(VARIANT_TABLE).filter(original => target.includes(original));
@@ -197,9 +197,9 @@ const applyVariants = (
  * @returns The Katakana script string.
  */
 export function convertLatnToKana(latn: string): string {
-	latn = clean(latn).toLowerCase();
+	const cleanedLatn = clean(latn).toLowerCase();
 
-	const syllables = separate(latn);
+	const syllables = separate(cleanedLatn);
 	let result = syllables
 		.map((syllable, index): string => {
 			const nextChar = syllables[index + 1];
@@ -214,16 +214,33 @@ export function convertLatnToKana(latn: string): string {
 
 			// console.log(lastChar);
 
-			if (lastChar in CODA_CONS) {
+			function isCodaCons(char: string): char is keyof typeof CODA_CONS {
+				return char in CODA_CONS;
+			}
+
+			function isCodaVara(char: string): char is keyof typeof CODA_VARA {
+				return char in CODA_VARA;
+			}
+
+			function isSecondLastChar(
+				char: string,
+			): char is keyof (typeof CODA_VARA)[keyof typeof CODA_VARA] {
+				return char in CODA_VARA[lastChar as keyof typeof CODA_VARA];
+			}
+
+			if (isCodaCons(lastChar)) {
 				// Ends with a coda consonant with no variants
 				remains = remains.slice(0, -1);
 				coda = CODA_CONS[lastChar];
 				if (lastChar === "n" && nextChar) {
-					coda = CONVERSION_TABLE["nn"]!;
+					coda = CONVERSION_TABLE.nn;
 				}
-			} else if (lastChar in CODA_VARA) {
+			} else if (isCodaVara(lastChar)) {
 				remains = remains.slice(0, -1);
 				const secondLastChar = syllable[syllable.length - 2];
+				if (!isSecondLastChar(secondLastChar)) {
+					throw new Error(`invalid coda variant: ‘${syllable}’`);
+				}
 				coda = CODA_VARA[lastChar][secondLastChar];
 			}
 
@@ -240,12 +257,20 @@ export function convertLatnToKana(latn: string): string {
 			if (remains.startsWith("’")) {
 				remains = remains.slice(1);
 			}
-			if (remains in CONVERSION_TABLE) {
-				remains = CONVERSION_TABLE[remains]!;
-			} else if (remains.toLowerCase() in CONVERSION_TABLE) {
-				remains = CONVERSION_TABLE[remains.toLowerCase()]!;
+
+			function isNucleus(char: string): char is keyof typeof CONVERSION_TABLE {
+				return char in CONVERSION_TABLE;
+			}
+
+			if (isNucleus(remains)) {
+				remains = CONVERSION_TABLE[remains];
 			} else {
-				throw new Error(`cannot find katakana for CV pair: ‘${remains}’`);
+				const lowerRemains = remains.toLowerCase();
+				if (isNucleus(lowerRemains)) {
+					remains = CONVERSION_TABLE[lowerRemains];
+				} else {
+					throw new Error(`cannot find katakana for CV pair: ‘${remains}’`);
+				}
 			}
 
 			const converted = remains + coda;
@@ -295,18 +320,19 @@ export function convertKanaToLatn(kana: string): string {
 			// .split(/(\\p{Script_Extensions=Katakana}\u309a?)
 			.filter(Boolean)
 			.map((char) => {
-				if (char == "ン") return "n";
-				if (char in DIAGRAPHS) return DIAGRAPHS[char];
+				let result = char;
+				if (result === "ン") return "n";
+				if (result in DIAGRAPHS) return DIAGRAPHS[result];
 				for (const [key, value] of Object.entries(CONVERSION_TABLE)) {
-					char = char.replace(value, key);
+					result = result.replace(value, key);
 				}
 				// console.log(char);
 				for (const [key, value] of Object.entries(CODA_CONS)) {
-					char = char.replace(value, key);
+					result = result.replace(value, key);
 				}
 				for (const [key, value] of Object.entries(CODA_VARA)) {
 					for (const [, value2] of Object.entries(value)) {
-						char = char.replace(value2, key);
+						result = result.replace(value2, key);
 					}
 				}
 				for (const [key, value] of [
@@ -316,9 +342,9 @@ export function convertKanaToLatn(kana: string): string {
 					["ゥ", "u"],
 					["ォ", "o"],
 				]) {
-					char = char.replace(key, value);
+					result = result.replace(key, value);
 				}
-				return char;
+				return result;
 			})
 			.join("’")
 			.replace(/(?<![^aieou])’/g, "") // If the previous character is not a vowel, remove the apostrophe\
