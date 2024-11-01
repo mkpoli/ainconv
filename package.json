@@ -6,9 +6,12 @@
   "scripts": {
     "build": "tsc && vite build",
     "build:watch": "tsc -w",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "check": "biome check",
+    "check:fix": "biome check --write"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@rollup/plugin-typescript": "^12.1.1",
     "bun-types": "^1.1.33",
     "rollup-plugin-terser": "^7.0.2",
