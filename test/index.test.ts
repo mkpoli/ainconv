@@ -16,6 +16,8 @@ import {
 import { convert, detect } from "../src/index";
 import { separate } from "../src/syllable";
 
+import TEST_CASES from "./cases/test_cases.json";
+
 test("Script Detection", () => {
 	expect(detect("aynu")).toBe("Latn");
 	expect(detect("アイヌ")).toBe("Kana");
@@ -54,69 +56,9 @@ test("Syllable Separation", () => {
 	]);
 });
 
-const TEST_CASES = [
-	["", [], "", "", "", ""],
-	["aynu", ["ay", "nu"], "アイヌ", "айну", "애누", "ainu"],
-	["itak", ["i", "tak"], "イタㇰ", "итак", "이닥", "itak"],
-	[
-		"aynuitak",
-		["ay", "nu", "i", "tak"],
-		"アイヌイタㇰ",
-		"айнуитак",
-		"애누이닥",
-		"ainuitak",
-	],
-	["sinep", ["si", "nep"], "シネㇷ゚", "синэп", "시넙", "sinep"],
-	["ruunpe", ["ru", "un", "pe"], "ルウンペ", "руунпэ", "루운버", "ruunpe"],
-	["wenkur", ["we", "n", "kur"], "ウェンクㇽ", "вэнкур", "펀굴", "wenkur"],
-	["pekanke", ["pe", "kan", "ke"], "ペカンケ", "пэканкэ", "버간거", "pekanke"],
-	[
-		"eramuskare",
-		["e", "ra", "mus", "ka", "re"],
-		"エラムㇱカレ",
-		"эрамускарэ",
-		"어라뭇가러",
-		"eramuskare",
-	],
-	["hioy’oy", ["hi", "oy", "oy"], "ヒオイオイ", "хиойой", "히외외", "hioy’oy"],
-	[
-		"irankarapte",
-		["i", "ran", "ka", "rap", "te"],
-		"イランカラㇷ゚テ",
-		"иранкараптэ",
-		"이란가랍더",
-		"irankarapte",
-	],
-	[
-		"iyairaykere",
-		["i", "ya", "yi", "ray", "ke", "re"],
-		"イヤイライケレ",
-		"ияирайкэрэ",
-		"이야이래거러",
-		"iyairaikere",
-	],
-	[
-		"yayrayke",
-		["yay", "ray", "ke"],
-		"ヤイライケ",
-		"яйрайкэ",
-		"얘래거",
-		"yairaike",
-	],
-	[
-		"keyaykosiramsuypa",
-		["ke", "yay", "ko", "si", "ram", "suy", "pa"],
-		"ケヤイコシラㇺスイパ",
-		"кэяйкосирамсуйпа",
-		"거얘고시람쉬바",
-		"keyaikosiramsuipa",
-	],
-] as const;
-
 test("Script Conversion (Latn -> Kana)", () => {
 	for (const testCase of TEST_CASES) {
-		const latn = testCase[0];
-		const kana = testCase[2];
+		const { latn, kana } = testCase;
 		// console.log('LATN = ', latn);
 		// console.log('KANA = ', kana);
 		// console.log('-> KANA = ', convertLatnToKana(latn));
@@ -126,8 +68,7 @@ test("Script Conversion (Latn -> Kana)", () => {
 
 test("Script Conversion (Latn -> Cyrl)", () => {
 	for (const testCase of TEST_CASES) {
-		const latn = testCase[0];
-		const cyrl = testCase[3];
+		const { latn, cyrl } = testCase;
 		// console.log('LATN = ', latn);
 		// console.log('CYRL = ', cyrl);
 		// console.log('-> CYRL = ', convertLatnToCyrl(latn));
@@ -137,8 +78,7 @@ test("Script Conversion (Latn -> Cyrl)", () => {
 
 test("Script Conversion (Cyrl -> Latn)", () => {
 	for (const testCase of TEST_CASES) {
-		const latn = testCase[0];
-		const cyrl = testCase[3];
+		const { latn, cyrl } = testCase;
 		// console.log('CYRL = ', cyrl);
 		// console.log('LATN = ', latn);
 		// console.log('-> LATN = ', convertCyrlToLatn(cyrl));
@@ -148,19 +88,17 @@ test("Script Conversion (Cyrl -> Latn)", () => {
 
 test("Script Conversion (Latn -> Hang)", () => {
 	for (const testCase of TEST_CASES) {
-		const latn = testCase[0];
-		const hang = testCase[4];
-		console.log(latn);
-		console.log(hang);
-		console.log(convertLatnToHang(latn));
+		const { latn, hang } = testCase;
+		// console.log(latn);
+		// console.log(hang);
+		// console.log(convertLatnToHang(latn));
 		expect(convertLatnToHang(latn)).toBe(hang);
 	}
 });
 
 test("Script Conversion (Hang -> Latn)", () => {
 	for (const testCase of TEST_CASES) {
-		const latn = testCase[0];
-		const hang = testCase[4];
+		const { latn, hang } = testCase;
 		// console.log(hang);
 		// console.log(latn);
 		// console.log(convertHangToLatn(hang));
@@ -170,8 +108,7 @@ test("Script Conversion (Hang -> Latn)", () => {
 
 test("Script Conversion (Cyrillic -> Kana)", () => {
 	for (const testCase of TEST_CASES) {
-		const kana = testCase[2];
-		const cyrl = testCase[3];
+		const { kana, cyrl } = testCase;
 		// console.log(cyrl);
 		// console.log(kana);
 		// console.log(convertCyrlToKana(cyrl));
@@ -181,8 +118,7 @@ test("Script Conversion (Cyrillic -> Kana)", () => {
 
 test("Script Conversion (Hangul -> Cyrillic)", () => {
 	for (const testCase of TEST_CASES) {
-		const hang = testCase[4];
-		const cyrl = testCase[3];
+		const { hang, cyrl } = testCase;
 		// console.log(hang);
 		// console.log(cyrl);
 		// console.log(convertHangToCyrl(hang));
@@ -192,8 +128,7 @@ test("Script Conversion (Hangul -> Cyrillic)", () => {
 
 test("Script Conversion (Cyrillic -> Hangul)", () => {
 	for (const testCase of TEST_CASES) {
-		const hang = testCase[4];
-		const cyrl = testCase[3];
+		const { hang, cyrl } = testCase;
 		// console.log(cyrl);
 		// console.log(hang);
 		// console.log(convertCyrlToHang(cyrl));
@@ -203,8 +138,7 @@ test("Script Conversion (Cyrillic -> Hangul)", () => {
 
 test("Script Conversion (Hangul -> Kana)", () => {
 	for (const testCase of TEST_CASES) {
-		const kana = testCase[2];
-		const hang = testCase[4];
+		const { kana, hang } = testCase;
 		// console.log(hang);
 		// console.log(kana);
 		// console.log(convertHangToKana(hang));
@@ -216,8 +150,7 @@ test("Script Conversion (Hangul -> Kana)", () => {
 
 test("Script Conversion (Kana -> Latn)", () => {
 	for (const testCase of TEST_CASES) {
-		const kana = testCase[2];
-		const latnLossy = testCase[5];
+		const { kana, latnLossy } = testCase;
 		// console.log('KANA = ', kana);
 		// console.log('LATN = ', latnLossy);
 		// console.log('-> LATN = ', convertKanaToLatn(kana));
@@ -227,8 +160,7 @@ test("Script Conversion (Kana -> Latn)", () => {
 
 test("Script Conversion (Kana -> Cyrillic)", () => {
 	for (const testCase of TEST_CASES) {
-		const kana = testCase[2];
-		const latnLossy = testCase[5];
+		const { kana, latnLossy } = testCase;
 		const cyrlLossy = convertLatnToCyrl(latnLossy);
 		// console.log(kana);
 		// console.log(cyrl);
@@ -239,8 +171,7 @@ test("Script Conversion (Kana -> Cyrillic)", () => {
 
 test("Script Conversion (Kana -> Hangul)", () => {
 	for (const testCase of TEST_CASES) {
-		const kana = testCase[2];
-		const latnLossy = testCase[5];
+		const { kana, latnLossy } = testCase;
 		const hangLossy = convertLatnToHang(latnLossy);
 		// console.log(kana);
 		// console.log(hang);
@@ -300,6 +231,113 @@ test('Special Case (with "=")', () => {
 		hang: "아후날",
 		latnLossy: "ahunar",
 	} as const;
+	[
+		{ latn: "", syllables: [], kana: "", cyrl: "", hang: "", latnLossy: "" },
+		{
+			latn: "aynu",
+			syllables: ["ay", "nu"],
+			kana: "アイヌ",
+			cyrl: "айну",
+			hang: "애누",
+			latnLossy: "ainu",
+		},
+		{
+			latn: "itak",
+			syllables: ["i", "tak"],
+			kana: "イタㇰ",
+			cyrl: "итак",
+			hang: "이닥",
+			latnLossy: "itak",
+		},
+		{
+			latn: "aynuitak",
+			syllables: ["ay", "nu", "i", "tak"],
+			kana: "アイヌイタㇰ",
+			cyrl: "айнуитак",
+			hang: "애누이닥",
+			latnLossy: "ainuitak",
+		},
+		{
+			latn: "sinep",
+			syllables: ["si", "nep"],
+			kana: "シネㇷ゚",
+			cyrl: "синэп",
+			hang: "시넙",
+			latnLossy: "sinep",
+		},
+		{
+			latn: "ruunpe",
+			syllables: ["ru", "un", "pe"],
+			kana: "ルウンペ",
+			cyrl: "руунпэ",
+			hang: "루운버",
+			latnLossy: "ruunpe",
+		},
+		{
+			latn: "wenkur",
+			syllables: ["we", "n", "kur"],
+			kana: "ウェンクㇽ",
+			cyrl: "вэнкур",
+			hang: "펀굴",
+			latnLossy: "wenkur",
+		},
+		{
+			latn: "pekanke",
+			syllables: ["pe", "kan", "ke"],
+			kana: "ペカンケ",
+			cyrl: "пэканкэ",
+			hang: "버간거",
+			latnLossy: "pekanke",
+		},
+		{
+			latn: "eramuskare",
+			syllables: ["e", "ra", "mus", "ka", "re"],
+			kana: "エラムㇱカレ",
+			cyrl: "эрамускарэ",
+			hang: "어라뭇가러",
+			latnLossy: "eramuskare",
+		},
+		{
+			latn: "hioy’oy",
+			syllables: ["hi", "oy", "oy"],
+			kana: "ヒオイオイ",
+			cyrl: "хиойой",
+			hang: "히외외",
+			latnLossy: "hioy’oy",
+		},
+		{
+			latn: "irankarapte",
+			syllables: ["i", "ran", "ka", "rap", "te"],
+			kana: "イランカラㇷ゚テ",
+			cyrl: "иранкараптэ",
+			hang: "이란가랍더",
+			latnLossy: "irankarapte",
+		},
+		{
+			latn: "iyairaykere",
+			syllables: ["i", "ya", "yi", "ray", "ke", "re"],
+			kana: "イヤイライケレ",
+			cyrl: "ияирайкэрэ",
+			hang: "이야이래거러",
+			latnLossy: "iyairaikere",
+		},
+		{
+			latn: "yayrayke",
+			syllables: ["yay", "ray", "ke"],
+			kana: "ヤイライケ",
+			cyrl: "яйрайкэ",
+			hang: "얘래거",
+			latnLossy: "yairaike",
+		},
+		{
+			latn: "keyaykosiramsuypa",
+			syllables: ["ke", "yay", "ko", "si", "ram", "suy", "pa"],
+			kana: "ケヤイコシラㇺスイパ",
+			cyrl: "кэяйкосирамсуйпа",
+			hang: "거얘고시람쉬바",
+			latnLossy: "keyaikosiramsuipa",
+		},
+	];
 
 	console.log("LATN = ", CASE.latn);
 	console.log("KANA = ", CASE.kana);
