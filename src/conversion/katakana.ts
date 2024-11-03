@@ -347,9 +347,8 @@ export function convertKanaToLatn(kana: string): string {
 				return result;
 			})
 			.join("’")
-			.replace(/(?<![^aieou])’/g, "") // If the previous character is not a vowel, remove the apostrophe\
-			// If the next character is not a vowel, remove the apostrophe
-			.replace(/’(?![aieou])/g, "")
+			.replace(/(?<![^aieou])’/g, "") // If the previous character is not a consonant, remove the apostrophe\
+			.replace(/’(?![aieou])/g, "") // If the next character is not a vowel, remove the apostrophe
 		// .replace(/(?=[^aieou])’(?<=[^aieou])/g, '')
 	);
 	// .replace(/([aueo])i/, '$1y')
