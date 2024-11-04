@@ -155,6 +155,158 @@ const VARIANT_TABLE = {
 	// ㇿ: ['ㇽ'],
 } as const;
 
+const HALF_WIDTH_KATAKANA_TABLE = {
+	// ア行
+	ｱ: "ァ",
+	ｲ: "ィ",
+	ｳ: "ゥ",
+	ｴ: "ェ",
+	ｵ: "ォ",
+
+	// カ行
+	ｸ: "ㇰ",
+	ｹ: "ヶ",
+
+	// サ行
+	ｼ: "ㇱ",
+	ｽ: "ㇲ",
+
+	// タ行
+	ﾄ: "ㇳ",
+	ﾀ: "ㇴ",
+
+	// ナ行
+	ﾇ: "ㇴ",
+
+	// ハ行
+	ﾊ: "ㇵ",
+	ﾋ: "ㇶ",
+	ﾌ: "ㇷ",
+	ﾍ: "ㇸ",
+	ﾎ: "ㇹ",
+
+	// パ行
+	ﾌﾟ: "ㇷ゚",
+
+	// マ行
+	ﾑ: "ㇺ",
+
+	// ヤ行
+	ﾔ: "ャ",
+	ﾕ: "ュ",
+	ﾖ: "ョ",
+
+	// ラ行
+	ﾗ: "ㇻ",
+	ﾘ: "ㇼ",
+	ﾙ: "ㇽ",
+	ﾚ: "ㇾ",
+	ﾛ: "ㇿ",
+
+	// ワ行
+	ﾜ: "ヮ",
+	ｦ: "𛅦",
+
+	// 撥音
+	ﾝ: "𛅧",
+
+	// There is no half-width version of ヱ (we) and ヰ (wi)
+} as const;
+
+const HIRAGANA_TO_KATAKANA_TABLE = {
+	あ: "ア",
+	い: "イ",
+	う: "ウ",
+	ゔ: "ヴ",
+	え: "エ",
+	お: "オ",
+	か: "カ",
+	き: "キ",
+	く: "ク",
+	け: "ケ",
+	こ: "コ",
+	が: "ガ",
+	ぎ: "ギ",
+	ぐ: "グ",
+	げ: "ゲ",
+	ご: "ゴ",
+	さ: "サ",
+	し: "シ",
+	す: "ス",
+	せ: "セ",
+	そ: "ソ",
+	ざ: "ザ",
+	じ: "ジ",
+	ず: "ズ",
+	ぜ: "ゼ",
+	ぞ: "ゾ",
+	た: "タ",
+	ち: "チ",
+	つ: "ツ",
+	て: "テ",
+	と: "ト",
+	だ: "ダ",
+	ぢ: "ヂ",
+	づ: "ヅ",
+	で: "デ",
+	ど: "ド",
+	な: "ナ",
+	に: "ニ",
+	ぬ: "ヌ",
+	ね: "ネ",
+	の: "ノ",
+	は: "ハ",
+	ひ: "ヒ",
+	ふ: "フ",
+	へ: "ヘ",
+	ほ: "ホ",
+	ば: "バ",
+	び: "ビ",
+	ぶ: "ブ",
+	べ: "ベ",
+	ぼ: "ボ",
+	ぱ: "パ",
+	ぴ: "ピ",
+	ぷ: "プ",
+	ぺ: "ペ",
+	ぽ: "ポ",
+	ま: "マ",
+	み: "ミ",
+	む: "ム",
+	め: "メ",
+	も: "モ",
+	や: "ヤ",
+	ゆ: "ユ",
+	よ: "ヨ",
+	ら: "ラ",
+	り: "リ",
+	る: "ル",
+	れ: "レ",
+	ろ: "ロ",
+	わ: "ワ",
+	ゐ: "ヰ",
+	ゑ: "ヱ",
+	を: "ヲ",
+	ん: "ン",
+	っ: "ッ",
+	ゃ: "ャ",
+	ゅ: "ュ",
+	ょ: "ョ",
+	ぁ: "ァ",
+	ぃ: "ィ",
+	ぅ: "ゥ",
+	ぇ: "ェ",
+	ぉ: "ォ",
+	ゎ: "ヮ",
+	𛅐: "𛅤",
+	𛅑: "𛅥",
+	𛅒: "𛅦",
+} as const;
+
+const NON_COMBINING_MODIFIERS = {
+	゜: "゚",
+	゛: "゛",
+} as const;
 // const applyVariants = (
 // 	result: string,
 // 	variantKeys: string[],
@@ -322,24 +474,51 @@ export function convertKanaToLatn(kana: string): string {
 		// console.log(new RegExp(`${Object.keys(DIAGRAPHS).join('|')}|(\\p{Script_Extensions=Katakana}\u309a?)`, 'u'));
 		return (
 			word
+				.replaceAll(
+					new RegExp(`${Object.keys(NON_COMBINING_MODIFIERS).join("|")}`, "gu"),
+					(char) =>
+						NON_COMBINING_MODIFIERS[
+							char as keyof typeof NON_COMBINING_MODIFIERS
+						],
+				)
+				// normalize combining diacritical marks
+				.normalize("NFC")
+				.replaceAll(
+					new RegExp(
+						`${Object.keys(HIRAGANA_TO_KATAKANA_TABLE).join("|")}`,
+						"gu",
+					),
+					(char) =>
+						HIRAGANA_TO_KATAKANA_TABLE[
+							char as keyof typeof HIRAGANA_TO_KATAKANA_TABLE
+						],
+				)
 				.split(
 					new RegExp(
 						`(${Object.keys(DIAGRAPHS).join("|")}|\\p{Script_Extensions=Katakana}\u309a?)`,
 						"u",
 					),
 				)
+				.map((char) => {
+					if (char in HALF_WIDTH_KATAKANA_TABLE) {
+						return HALF_WIDTH_KATAKANA_TABLE[
+							char as keyof typeof HALF_WIDTH_KATAKANA_TABLE
+						];
+					}
+					return char;
+				})
 				// .split(/(\\p{Script_Extensions=Katakana}\u309a?)
 				.filter(Boolean)
 				.map((char) => {
 					let result = char;
-					if (result === "ン") return "n";
+					if (result === "ン" || result === "ﾝ") return "n";
 					if (result in DIAGRAPHS) return DIAGRAPHS[result];
 					for (const [key, value] of Object.entries(CONVERSION_TABLE)) {
 						result = result.replace(value, key);
 					}
 					// console.log(char);
 					for (const [key, value] of Object.entries(CODA_CONS)) {
-						result = result.replace(value, key);
+						result = result.replace(value, key.toLowerCase());
 					}
 					for (const [key, value] of Object.entries(CODA_VARA)) {
 						for (const [, value2] of Object.entries(value)) {
@@ -364,7 +543,8 @@ export function convertKanaToLatn(kana: string): string {
 		);
 	}
 
-	const REGEX = /([\p{Script_Extensions=Katakana}'’＝]+)/u;
+	const REGEX =
+		/([\p{Script_Extensions=Katakana}\p{Script_Extensions=Hiragana}'’＝]+)/u;
 	return kana
 		.split(REGEX)
 		.map((w) => (REGEX.test(w) ? convertWord(w) : w))
