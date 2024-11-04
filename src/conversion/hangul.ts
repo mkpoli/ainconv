@@ -87,7 +87,18 @@ const FINALS: Record<string, number> = {
 };
 
 const JAMO_INITIALS: Record<string, string> = {
+	"": "",
 	ㅱ: "ᄝ",
+	ㄱ: "ᄀ",
+	ㄴ: "ᄂ",
+	ㄷ: "ᄃ",
+	ㄹ: "ᄅ",
+	ㅁ: "ᄆ",
+	ㅂ: "ᄇ",
+	ㅅ: "ᄉ",
+	ㅇ: "ᄋ",
+	ㅈ: "ᄌ",
+	ㅎ: "ᄒ",
 };
 
 const JAMO_MEDIALS: Record<string, string> = {
@@ -147,7 +158,8 @@ export function convertLatnToHang(latn: string): string {
 
 		// Separate by syllables
 		let syllables = separate(cleanedLatn);
-		// console.log('syllables', syllables);
+
+		// console.log({ syllables });
 
 		for (const [accented, unaccented] of Object.entries(
 			ACCENT_CONVERSION_TABLE,
@@ -181,7 +193,7 @@ export function convertLatnToHang(latn: string): string {
 				return result.replace(/ㅣㅣ/g, "ㅣ");
 			});
 
-		// console.log('convertedSyllables', convertedSyllables);
+		// console.log({ convertedSyllables });
 
 		const hangulCharacters = convertedSyllables.map((syllable) => {
 			// Record of initial consonants (choseong)
@@ -217,6 +229,8 @@ export function convertLatnToHang(latn: string): string {
 				0xac00 + (initialIndex * 21 + medialIndex) * 28 + finalIndex,
 			);
 		});
+
+		// console.log({ hangulCharacters });
 
 		return hangulCharacters.join("");
 	}
