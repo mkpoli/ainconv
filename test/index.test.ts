@@ -195,6 +195,11 @@ test("Script Conversion (Kana -> Latn)", () => {
 		// console.log('-> LATN = ', convertKanaToLatn(kana));
 		expect(convertKanaToLatn(kana)).toBe(latnLossy.toLowerCase());
 	}
+
+	for (const testCase of ROBUSTNESS.filter((t) => t.from === "Kana")) {
+		const { Kana, Latn } = testCase;
+		expect(convertKanaToLatn(Kana)).toBe(Latn.toLowerCase());
+	}
 });
 
 test("Script Conversion (Kana -> Cyrl)", () => {
@@ -206,6 +211,11 @@ test("Script Conversion (Kana -> Cyrl)", () => {
 		// console.log(convertKanaToCyrl(kana));
 		expect(convertKanaToCyrl(kana)).toBe(cyrlLossy);
 	}
+
+	for (const testCase of ROBUSTNESS.filter((t) => t.from === "Kana")) {
+		const { Kana, Cyrl } = testCase;
+		expect(convertKanaToCyrl(Kana)).toBe(Cyrl);
+	}
 });
 
 test("Script Conversion (Kana -> Hang)", () => {
@@ -216,6 +226,11 @@ test("Script Conversion (Kana -> Hang)", () => {
 		// console.log(hang);
 		// console.log(convertKanaToHang(kana));
 		expect(convertKanaToHang(kana)).toBe(hangLossy);
+	}
+
+	for (const testCase of ROBUSTNESS.filter((t) => t.from === "Kana")) {
+		const { Kana, Hang } = testCase;
+		expect(convertKanaToHang(Kana)).toBe(Hang);
 	}
 });
 
