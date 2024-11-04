@@ -79,7 +79,7 @@ const CONVERSION_TABLE = {
 	we: "ヱ",
 	wo: "ヲ",
 	nn: "ン",
-	tt: "ッ",
+	// tt: "ッ",
 } as const;
 
 const CODA_CONS = {
