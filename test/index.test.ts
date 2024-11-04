@@ -112,6 +112,9 @@ function removeAccents(str: string) {
 }
 
 test("Script Conversion (Hang -> Latn)", () => {
+	// Robust if no ambiguity
+	expect(convertHangToLatn("왁가")).toBe("wakka");
+
 	for (const testCase of TEST_CASES) {
 		const { latn, hang } = testCase;
 		const converted = convertHangToLatn(hang);

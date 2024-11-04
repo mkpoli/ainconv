@@ -37,6 +37,12 @@ const HANG_VOWEL_COMBINATION_TABLE: Record<string, string> = {
 	// ㅣㅔ: 'ㅖ', // yey
 };
 
+const HANG_ALTERNATIVE_W: Record<string, string> = {
+	ㅘ: "ㅱㅏ", // wa
+	ㅝ: "ㅱㅓ", // we
+	// wo does not exist because u + o is invalid (o)
+};
+
 const INITIALS: Record<string, number> = {
 	ㄱ: 0,
 	ㄴ: 2,
@@ -302,11 +308,17 @@ export function convertHangToLatn(hang: string): string {
 
 				let result = initial + medial + final;
 
+				for (const [combined, individual] of Object.entries(
+					HANG_ALTERNATIVE_W,
+				)) {
+					result = result.replace(combined, individual);
+				}
+
 				// console.log('hangulB', hangul);
-				for (const [key, value] of Object.entries(
+				for (const [individual, combined] of Object.entries(
 					HANG_VOWEL_COMBINATION_TABLE,
 				)) {
-					result = result.replace(value, key);
+					result = result.replace(combined, individual);
 				}
 				// console.log('hangulA', hangul);
 
