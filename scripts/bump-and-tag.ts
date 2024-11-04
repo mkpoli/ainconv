@@ -1,4 +1,6 @@
 import { $ } from "bun";
 
-await $`git commit -am "Bump version to v${Bun.env.npm_package_version}"`;
-await $`git tag -a v${Bun.env.npm_package_version} -m "Bump version to v${Bun.env.npm_package_version}"`;
+const npmPackageVersion = (await Bun.file("package.json").json()).version;
+
+await $`git commit -am "Bump version to v${npmPackageVersion}"`;
+await $`git tag -a v${npmPackageVersion} -m "Bump version to v${npmPackageVersion}"`;
