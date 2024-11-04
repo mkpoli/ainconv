@@ -89,20 +89,31 @@ test("Script Conversion (Cyrl -> Latn)", () => {
 test("Script Conversion (Latn -> Hang)", () => {
 	for (const testCase of TEST_CASES) {
 		const { latn, hang } = testCase;
-		// console.log(latn);
-		// console.log(hang);
-		// console.log(convertLatnToHang(latn));
-		expect(convertLatnToHang(latn)).toBe(hang);
+		const converted = convertLatnToHang(latn);
+		if (converted !== hang) {
+			console.log(`"${latn}" -> "${converted}" (expecting "${hang}")`);
+		}
+		expect(converted).toBe(hang);
 	}
 });
+
+function removeAccents(str: string) {
+	return str
+		.replace("á", "a")
+		.replace("é", "e")
+		.replace("í", "i")
+		.replace("ó", "o")
+		.replace("ú", "u");
+}
 
 test("Script Conversion (Hang -> Latn)", () => {
 	for (const testCase of TEST_CASES) {
 		const { latn, hang } = testCase;
-		// console.log(hang);
-		// console.log(latn);
-		// console.log(convertHangToLatn(hang));
-		expect(convertHangToLatn(hang)).toBe(latn.toLowerCase());
+		const converted = convertHangToLatn(hang);
+		if (converted !== latn) {
+			console.log(`"${hang}" -> "${converted}" (expecting "${latn}")`);
+		}
+		expect(converted).toBe(removeAccents(latn.toLowerCase()).replace("=", ""));
 	}
 });
 

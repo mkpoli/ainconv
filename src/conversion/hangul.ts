@@ -17,8 +17,7 @@ const LATN_2_HANG_TABLE: Record<string, string> = {
 	s: "ㅅ",
 	h: "ㅎ",
 	r: "ㄹ",
-	w: "ㅍ",
-	// TODO: w: 'ㅸ',
+	w: "ㅱ",
 	y: "ㅣ",
 };
 
@@ -87,6 +86,44 @@ const FINALS: Record<string, number> = {
 	ㅎ: 27,
 };
 
+const JAMO_INITIALS: Record<string, string> = {
+	ㅱ: "ᄝ",
+};
+
+const JAMO_MEDIALS: Record<string, string> = {
+	ㅏ: "ᅡ",
+	ㅓ: "ᅥ",
+	ㅗ: "ᅩ",
+	ㅜ: "ᅮ",
+	ㅣ: "ᅵ",
+};
+
+const JAMO_FINALS: Record<string, string> = {
+	"": "",
+	ㄱ: "ᆨ",
+	ㄴ: "ᆫ",
+	ㄷ: "ᆮ",
+	ㄹ: "ᆯ",
+	ㅁ: "ᆷ",
+	ㅂ: "ᆸ",
+	ㅅ: "ᆺ",
+	ㅈ: "ᆽ",
+	ㅎ: "ᇂ",
+	ㅱ: "ᇢ",
+};
+
+function toComposedHangul(
+	initial: string,
+	medial: string,
+	final: string,
+): string {
+	const combiningInitial = JAMO_INITIALS[initial];
+	const combiningMedial = JAMO_MEDIALS[medial];
+	const combiningFinal = JAMO_FINALS[final];
+
+	return combiningInitial + combiningMedial + combiningFinal;
+}
+
 /**
  * Convert Latin script to Hangul script.
  *
@@ -154,6 +191,10 @@ export function convertLatnToHang(latn: string): string {
 			);
 		}
 
+		if (chars.includes("ㅱ")) {
+			return toComposedHangul(chars[0], chars[1], chars[2] ?? "");
+		}
+
 		// Find the indices of initial, medial, (and final) components
 		const initialIndex = INITIALS[chars[0]];
 		const medialIndex = MEDIALS[chars[1]];
@@ -209,10 +250,24 @@ export function convertHangToLatn(hang: string): string {
 		Object.entries(FINALS).map(([k, v]) => [v, k]),
 	);
 
-	const decomposed = Array.from(hang)
-		.map((char) => {
-			// console.log('char', char);
-			// Decompose Hangul character
+	const reverseJamoInitials = Object.fromEntries(
+		Object.entries(JAMO_INITIALS).map(([k, v]) => [v, k]),
+	);
+	const reverseJamoMedials = Object.fromEntries(
+		Object.entries(JAMO_MEDIALS).map(([k, v]) => [v, k]),
+	);
+	const reverseJamoFinals = Object.fromEntries(
+		Object.entries(JAMO_FINALS).map(([k, v]) => [v, k]),
+	);
+
+	// split hangul jamo group and hangul character
+	const clusters = hang.split(/([ᄀ-ᇿ]+|[가-힯])/).filter(Boolean);
+
+	const decomposed = clusters.map((char) => {
+		// console.log('char', char);
+		// Decompose Hangul character
+
+		if (/[가-힯]/.test(char)) {
 			const [initialIndex, medialIndex, finalIndex] = decomposeHangul(char);
 
 			// Map decomposed indices to Latin characters
@@ -220,19 +275,33 @@ export function convertHangToLatn(hang: string): string {
 			const medial = reverseMedials[medialIndex] || "";
 			const final = reverseFinals[finalIndex] || "";
 
-			return initial + medial + final;
-		})
-		.map((hangul) => {
-			let result = hangul;
+			let result = initial + medial + final;
+
 			// console.log('hangulB', hangul);
 			for (const [key, value] of Object.entries(HANG_VOWEL_COMBINATION_TABLE)) {
 				result = result.replace(value, key);
 			}
 			// console.log('hangulA', hangul);
-			return result;
-		});
 
-	// console.log('decomposed', decomposed);
+			return result;
+		}
+
+		let initial = "";
+		let medial = "";
+		let final = "";
+
+		for (const c of [...char]) {
+			if (reverseJamoInitials[c]) {
+				initial = reverseJamoInitials[c];
+			} else if (reverseJamoMedials[c]) {
+				medial = reverseJamoMedials[c];
+			} else if (reverseJamoFinals[c]) {
+				final = reverseJamoFinals[c];
+			}
+		}
+
+		return initial + medial + final;
+	});
 
 	const latin = decomposed
 		.map((hangul) => {
