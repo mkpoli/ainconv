@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added unified test cases in [mkpoli/ainconv-tests](https://github.com/mkpoli/ainconv-tests).
 - Added word-based sentence conversion for all scripts.
 - Added CHANGELOG.md.
+- Added `bumpp` to bump the version.
 
 ### Fixed
 
