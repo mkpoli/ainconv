@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added half-width Katakana support.
+- Added uV support in Hangul for robustness.
+
+## [0.3.0] - 2024-11-04
+
+### Added
+
 - Added link to [ainconv-rs](https://github.com/mkpoli/ainconv-rs) in [README.md](README.md).
 - Added Biome as linting and formatting tool, fixed linting errors and formatted the codebase.
 - Added unified test cases in [mkpoli/ainconv-tests](https://github.com/mkpoli/ainconv-tests).
