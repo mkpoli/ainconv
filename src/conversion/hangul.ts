@@ -72,6 +72,7 @@ const MEDIALS: Record<string, number> = {
 	ㅚ: 11,
 	ㅛ: 12,
 	ㅜ: 13,
+	ㅝ: 14,
 	ㅟ: 16,
 	ㅠ: 17,
 	ㅣ: 20,
@@ -295,11 +296,12 @@ export function convertHangToLatn(hang: string): string {
 		const clusters = word.split(/([ᄀ-ᇿ]+|[가-힯])/).filter(Boolean);
 
 		const decomposed = clusters.map((char) => {
-			// console.log('char', char);
+			console.log("char", char);
 			// Decompose Hangul character
 
 			if (/[가-힯]/.test(char)) {
 				const [initialIndex, medialIndex, finalIndex] = decomposeHangul(char);
+				console.log({ initialIndex, medialIndex, finalIndex });
 
 				// Map decomposed indices to Latin characters
 				const initial = reverseInitials[initialIndex] || "";

@@ -16,6 +16,7 @@ import {
 import { convert, detect } from "../src/index";
 import { separate } from "../src/syllable";
 
+import ROBUSTNESS from "./cases/robustness.json";
 import TEST_CASES from "./cases/test_cases.json";
 
 test("Script Detection", () => {
@@ -112,9 +113,6 @@ function removeAccents(str: string) {
 }
 
 test("Script Conversion (Hang -> Latn)", () => {
-	// Robust if no ambiguity
-	expect(convertHangToLatn("왁가")).toBe("wakka");
-
 	for (const testCase of TEST_CASES) {
 		const { latn, hang } = testCase;
 		const converted = convertHangToLatn(hang);
@@ -124,9 +122,14 @@ test("Script Conversion (Hang -> Latn)", () => {
 		}
 		expect(converted).toBe(expected);
 	}
+
+	for (const testCase of ROBUSTNESS.filter((t) => t.from === "Hang")) {
+		const { Hang, Latn } = testCase;
+		expect(convertHangToLatn(Hang)).toBe(Latn);
+	}
 });
 
-test("Script Conversion (Cyrillic -> Kana)", () => {
+test("Script Conversion (Cyrl -> Kana)", () => {
 	for (const testCase of TEST_CASES) {
 		const { kana, cyrl } = testCase;
 		const converted = convertCyrlToKana(cyrl);
@@ -138,7 +141,7 @@ test("Script Conversion (Cyrillic -> Kana)", () => {
 	}
 });
 
-test("Script Conversion (Hangul -> Cyrillic)", () => {
+test("Script Conversion (Hang -> Cyrl)", () => {
 	for (const testCase of TEST_CASES) {
 		const { hang, cyrl } = testCase;
 		const converted = convertHangToCyrl(hang);
@@ -148,9 +151,14 @@ test("Script Conversion (Hangul -> Cyrillic)", () => {
 		}
 		expect(converted).toBe(expected);
 	}
+
+	for (const testCase of ROBUSTNESS.filter((t) => t.from === "Hang")) {
+		const { Hang, Cyrl } = testCase;
+		expect(convertHangToCyrl(Hang)).toBe(Cyrl);
+	}
 });
 
-test("Script Conversion (Cyrillic -> Hangul)", () => {
+test("Script Conversion (Cyrl -> Hang)", () => {
 	for (const testCase of TEST_CASES) {
 		const { hang, cyrl } = testCase;
 		// console.log(cyrl);
@@ -160,7 +168,7 @@ test("Script Conversion (Cyrillic -> Hangul)", () => {
 	}
 });
 
-test("Script Conversion (Hangul -> Kana)", () => {
+test("Script Conversion (Hang -> Kana)", () => {
 	for (const testCase of TEST_CASES) {
 		const { kana, hang } = testCase;
 		const converted = convertHangToKana(hang);
@@ -169,6 +177,11 @@ test("Script Conversion (Hangul -> Kana)", () => {
 			console.log(`"${hang}" -> "${converted}" (expecting "${expected}")`);
 		}
 		expect(converted).toBe(expected);
+	}
+
+	for (const testCase of ROBUSTNESS.filter((t) => t.from === "Hang")) {
+		const { Hang, Kana } = testCase;
+		expect(convertHangToKana(Hang)).toBe(Kana.replace("ㇰカ", "ッカ"));
 	}
 });
 
@@ -184,7 +197,7 @@ test("Script Conversion (Kana -> Latn)", () => {
 	}
 });
 
-test("Script Conversion (Kana -> Cyrillic)", () => {
+test("Script Conversion (Kana -> Cyrl)", () => {
 	for (const testCase of TEST_CASES) {
 		const { kana, latnLossy } = testCase;
 		const cyrlLossy = convertLatnToCyrl(latnLossy);
@@ -195,7 +208,7 @@ test("Script Conversion (Kana -> Cyrillic)", () => {
 	}
 });
 
-test("Script Conversion (Kana -> Hangul)", () => {
+test("Script Conversion (Kana -> Hang)", () => {
 	for (const testCase of TEST_CASES) {
 		const { kana, latnLossy } = testCase;
 		const hangLossy = convertLatnToHang(latnLossy);
@@ -206,7 +219,7 @@ test("Script Conversion (Kana -> Hangul)", () => {
 	}
 });
 
-// expect(convertLatnToKana('aynu')).toBe('アイヌ');test('Script Conversion (Hangul -> Cyrillic)', () => {
+// expect(convertLatnToKana('aynu')).toBe('アイヌ');test('Script Conversion (Hang -> Cyrl)', () => {
 
 // expect(convertLatnToCyrl('aynu')).toBe('айну');
 // expect(convertLatnToHang('aynu')).toBe('애누');
