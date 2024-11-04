@@ -9,9 +9,7 @@
 
 This npm package provides a comprehensive set of functions for converting text between different writing systems of the [Ainu language](https://en.wikipedia.org/wiki/Ainu_language).
 
-Currently, Latin (Romanization), Katakana, Cyrillic and Hangul scripts are supported. We are also planning to convert between different romanization systems and Katakana variants. Currently only the more adopted version of Latin script and lossy Katakana script are supported. 
-
-Sentence conversion is planned to be supported in the future. For now, only well-formed single word is accepted. The converted string are always in lower case.
+Currently, Latin (Romanization), Katakana, Cyrillic and Hangul scripts are supported. We are also planning to convert between different romanization systems and Katakana variants. Currently only the more adopted version of Latin script and lossy Katakana script are supported. The converted string are always in lower case.
 
 ### Important Note
 
