@@ -50,7 +50,7 @@
 		"prepublishOnly": "npm run build",
 		"check": "biome check",
 		"check:fix": "biome check --write",
-		"afterbump": "bun scripts/update-changelog.ts && bun scripts/bump-and-tag.ts &&",
+		"afterbump": "bun scripts/update-changelog.ts && bun scripts/bump-and-tag.ts",
 		"bump": "bumpp && bun run afterbump"
 	},
 	"source": "src/index.ts",
