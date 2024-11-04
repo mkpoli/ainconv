@@ -197,98 +197,108 @@ const VARIANT_TABLE = {
  * @returns The Katakana script string.
  */
 export function convertLatnToKana(latn: string): string {
-	const cleanedLatn = clean(latn).toLowerCase();
+	function convertWord(word: string): string {
+		const cleanedLatn = clean(word).toLowerCase();
 
-	const syllables = separate(cleanedLatn);
-	let result = syllables
-		.map((syllable, index): string => {
-			const nextChar = syllables[index + 1];
-			if (syllable.length === 0) {
-				return "";
-			}
-
-			let remains = syllable;
-			let coda = "";
-
-			const lastChar = syllable[syllable.length - 1];
-
-			// console.log(lastChar);
-
-			function isCodaCons(char: string): char is keyof typeof CODA_CONS {
-				return char in CODA_CONS;
-			}
-
-			function isCodaVara(char: string): char is keyof typeof CODA_VARA {
-				return char in CODA_VARA;
-			}
-
-			function isSecondLastChar(
-				char: string,
-			): char is keyof (typeof CODA_VARA)[keyof typeof CODA_VARA] {
-				return char in CODA_VARA[lastChar as keyof typeof CODA_VARA];
-			}
-
-			if (isCodaCons(lastChar)) {
-				// Ends with a coda consonant with no variants
-				remains = remains.slice(0, -1);
-				coda = CODA_CONS[lastChar];
-				if (lastChar === "n" && nextChar) {
-					coda = CONVERSION_TABLE.nn;
+		const syllables = separate(cleanedLatn);
+		let result = syllables
+			.map((syllable, index): string => {
+				const nextChar = syllables[index + 1];
+				if (syllable.length === 0) {
+					return "";
 				}
-			} else if (isCodaVara(lastChar)) {
-				remains = remains.slice(0, -1);
-				const secondLastChar = syllable[syllable.length - 2];
-				if (!isSecondLastChar(secondLastChar)) {
-					throw new Error(`invalid coda variant: ‘${syllable}’`);
+
+				let remains = syllable;
+				let coda = "";
+
+				const lastChar = syllable[syllable.length - 1];
+
+				// console.log(lastChar);
+
+				function isCodaCons(char: string): char is keyof typeof CODA_CONS {
+					return char in CODA_CONS;
 				}
-				coda = CODA_VARA[lastChar][secondLastChar];
-			}
 
-			// console.log(`remains = "${remains}", coda = "${coda}"`);
+				function isCodaVara(char: string): char is keyof typeof CODA_VARA {
+					return char in CODA_VARA;
+				}
 
-			// let accentedFlag = false;
-			const nucleus = remains[remains.length - 1];
+				function isSecondLastChar(
+					char: string,
+				): char is keyof (typeof CODA_VARA)[keyof typeof CODA_VARA] {
+					return char in CODA_VARA[lastChar as keyof typeof CODA_VARA];
+				}
 
-			if (nucleus in ACCENT_CONVERSION_TABLE) {
-				// accentedFlag = true;
-				remains = remains.slice(0, -1) + ACCENT_CONVERSION_TABLE[nucleus];
-			}
+				if (isCodaCons(lastChar)) {
+					// Ends with a coda consonant with no variants
+					remains = remains.slice(0, -1);
+					coda = CODA_CONS[lastChar];
+					if (lastChar === "n" && nextChar) {
+						coda = CONVERSION_TABLE.nn;
+					}
+				} else if (isCodaVara(lastChar)) {
+					remains = remains.slice(0, -1);
+					const secondLastChar = syllable[syllable.length - 2];
+					if (!isSecondLastChar(secondLastChar)) {
+						throw new Error(`invalid coda variant: ‘${syllable}’`);
+					}
+					coda = CODA_VARA[lastChar][secondLastChar];
+				}
 
-			if (remains.startsWith("’")) {
-				remains = remains.slice(1);
-			}
+				// console.log(`remains = "${remains}", coda = "${coda}"`);
 
-			function isNucleus(char: string): char is keyof typeof CONVERSION_TABLE {
-				return char in CONVERSION_TABLE;
-			}
+				// let accentedFlag = false;
+				const nucleus = remains[remains.length - 1];
 
-			if (isNucleus(remains)) {
-				remains = CONVERSION_TABLE[remains];
-			} else {
-				const lowerRemains = remains.toLowerCase();
-				if (isNucleus(lowerRemains)) {
-					remains = CONVERSION_TABLE[lowerRemains];
+				if (nucleus in ACCENT_CONVERSION_TABLE) {
+					// accentedFlag = true;
+					remains = remains.slice(0, -1) + ACCENT_CONVERSION_TABLE[nucleus];
+				}
+
+				if (remains.startsWith("’")) {
+					remains = remains.slice(1);
+				}
+
+				function isNucleus(
+					char: string,
+				): char is keyof typeof CONVERSION_TABLE {
+					return char in CONVERSION_TABLE;
+				}
+
+				if (isNucleus(remains)) {
+					remains = CONVERSION_TABLE[remains];
 				} else {
-					throw new Error(`cannot find katakana for CV pair: ‘${remains}’`);
+					const lowerRemains = remains.toLowerCase();
+					if (isNucleus(lowerRemains)) {
+						remains = CONVERSION_TABLE[lowerRemains];
+					} else {
+						throw new Error(`cannot find katakana for CV pair: ‘${remains}’`);
+					}
 				}
-			}
 
-			const converted = remains + coda;
+				const converted = remains + coda;
 
-			// if (accentedFlag) {
-			//   converted = `<u style='text-decoration:overline;'>${converted}</u>`;
-			// }
-			return converted;
-		})
-		.join("");
+				// if (accentedFlag) {
+				//   converted = `<u style='text-decoration:overline;'>${converted}</u>`;
+				// }
+				return converted;
+			})
+			.join("");
 
-	// Postprocess
-	for (const [variant, replacement] of Object.entries(VARIANT_TABLE)) {
-		result = result.replaceAll(variant, replacement[0]);
+		// Postprocess
+		for (const [variant, replacement] of Object.entries(VARIANT_TABLE)) {
+			result = result.replaceAll(variant, replacement[0]);
+		}
+
+		return result;
+		// TODO: Make configurable
 	}
 
-	return result;
-	// TODO: Make configurable
+	const REGEX = /([\p{Script_Extensions=Latin}'’\-=]+)/u;
+	return latn
+		.split(REGEX)
+		.map((w) => (REGEX.test(w) ? convertWord(w) : w))
+		.join("");
 }
 
 const DIAGRAPHS: Record<string, string> = {
@@ -308,49 +318,57 @@ const DIAGRAPHS: Record<string, string> = {
  * @returns The Latin string.
  */
 export function convertKanaToLatn(kana: string): string {
-	// console.log(new RegExp(`${Object.keys(DIAGRAPHS).join('|')}|(\\p{Script_Extensions=Katakana}\u309a?)`, 'u'));
-	return (
-		kana
-			.split(
-				new RegExp(
-					`(${Object.keys(DIAGRAPHS).join("|")}|\\p{Script_Extensions=Katakana}\u309a?)`,
-					"u",
-				),
-			)
-			// .split(/(\\p{Script_Extensions=Katakana}\u309a?)
-			.filter(Boolean)
-			.map((char) => {
-				let result = char;
-				if (result === "ン") return "n";
-				if (result in DIAGRAPHS) return DIAGRAPHS[result];
-				for (const [key, value] of Object.entries(CONVERSION_TABLE)) {
-					result = result.replace(value, key);
-				}
-				// console.log(char);
-				for (const [key, value] of Object.entries(CODA_CONS)) {
-					result = result.replace(value, key);
-				}
-				for (const [key, value] of Object.entries(CODA_VARA)) {
-					for (const [, value2] of Object.entries(value)) {
-						result = result.replace(value2, key);
+	function convertWord(word: string): string {
+		// console.log(new RegExp(`${Object.keys(DIAGRAPHS).join('|')}|(\\p{Script_Extensions=Katakana}\u309a?)`, 'u'));
+		return (
+			word
+				.split(
+					new RegExp(
+						`(${Object.keys(DIAGRAPHS).join("|")}|\\p{Script_Extensions=Katakana}\u309a?)`,
+						"u",
+					),
+				)
+				// .split(/(\\p{Script_Extensions=Katakana}\u309a?)
+				.filter(Boolean)
+				.map((char) => {
+					let result = char;
+					if (result === "ン") return "n";
+					if (result in DIAGRAPHS) return DIAGRAPHS[result];
+					for (const [key, value] of Object.entries(CONVERSION_TABLE)) {
+						result = result.replace(value, key);
 					}
-				}
-				for (const [key, value] of [
-					["ェ", "e"],
-					["ァ", "a"],
-					["ィ", "i"],
-					["ゥ", "u"],
-					["ォ", "o"],
-				]) {
-					result = result.replace(key, value);
-				}
-				return result;
-			})
-			.join("’")
-			.replace(/(?<![^aieou])’/g, "") // If the previous character is not a consonant, remove the apostrophe\
-			.replace(/’(?![aieou])/g, "") // If the next character is not a vowel, remove the apostrophe
-		// .replace(/(?=[^aieou])’(?<=[^aieou])/g, '')
-	);
+					// console.log(char);
+					for (const [key, value] of Object.entries(CODA_CONS)) {
+						result = result.replace(value, key);
+					}
+					for (const [key, value] of Object.entries(CODA_VARA)) {
+						for (const [, value2] of Object.entries(value)) {
+							result = result.replace(value2, key);
+						}
+					}
+					for (const [key, value] of [
+						["ェ", "e"],
+						["ァ", "a"],
+						["ィ", "i"],
+						["ゥ", "u"],
+						["ォ", "o"],
+					]) {
+						result = result.replace(key, value);
+					}
+					return result;
+				})
+				.join("’")
+				.replace(/(?<![^aieou])’/g, "") // If the previous character is not a consonant, remove the apostrophe\
+				.replace(/’(?![aieou])/g, "") // If the next character is not a vowel, remove the apostrophe
+			// .replace(/(?=[^aieou])’(?<=[^aieou])/g, '')
+		);
+	}
+
+	const REGEX = /([\p{Script_Extensions=Katakana}'’＝]+)/u;
+	return kana
+		.split(REGEX)
+		.map((w) => (REGEX.test(w) ? convertWord(w) : w))
+		.join("");
 	// .replace(/([aueo])i/, '$1y')
 	// .replace(/([aieo])u/, '$1w')
 	// .replace(/u([aieo])/, 'w$1')
