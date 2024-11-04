@@ -136,86 +136,96 @@ function toComposedHangul(
  * @returns
  */
 export function convertLatnToHang(latn: string): string {
-	const cleanedLatn = clean(latn).toLowerCase();
+	function convertWord(word: string): string {
+		const cleanedLatn = clean(word).toLowerCase();
 
-	if (cleanedLatn.length === 0) {
-		return "";
-	}
+		if (cleanedLatn.length === 0) {
+			return "";
+		}
 
-	// TODO: Separate by word boundaries
+		// TODO: Separate by word boundaries
 
-	// Separate by syllables
-	let syllables = separate(cleanedLatn);
-	// console.log('syllables', syllables);
+		// Separate by syllables
+		let syllables = separate(cleanedLatn);
+		// console.log('syllables', syllables);
 
-	for (const [accented, unaccented] of Object.entries(
-		ACCENT_CONVERSION_TABLE,
-	)) {
-		syllables = syllables.map((syllable) =>
-			syllable.replace(accented, unaccented),
-		);
-	}
+		for (const [accented, unaccented] of Object.entries(
+			ACCENT_CONVERSION_TABLE,
+		)) {
+			syllables = syllables.map((syllable) =>
+				syllable.replace(accented, unaccented),
+			);
+		}
 
-	const convertedSyllables = syllables
-		.map((syllable) => {
-			let result = syllable;
+		const convertedSyllables = syllables
+			.map((syllable) => {
+				let result = syllable;
 
-			if (VOWELS.includes(syllable[0]) || syllable[0] === "y") {
-				result = `’${syllable}`; // TODO: use straight apostrophe
+				if (VOWELS.includes(syllable[0]) || syllable[0] === "y") {
+					result = `’${syllable}`; // TODO: use straight apostrophe
+				}
+				// if (syllable.charAt(-1) === 'y') {
+				//   syllable = LATN_2_HANG_TABLE[syllable.slice(0, -1)] + 'ㅣ';
+				return [...result].map((char) => LATN_2_HANG_TABLE[char]).join("");
+			})
+			.map((syllable) => {
+				let result = syllable;
+
+				// console.log('syllable', syllable);
+				for (const [key, value] of Object.entries(
+					HANG_VOWEL_COMBINATION_TABLE,
+				)) {
+					result = result.replace(key, value);
+				}
+				// Convert vowel combinations
+				return result.replace(/ㅣㅣ/g, "ㅣ");
+			});
+
+		// console.log('convertedSyllables', convertedSyllables);
+
+		const hangulCharacters = convertedSyllables.map((syllable) => {
+			// Record of initial consonants (choseong)
+
+			// Split the input into individual characters
+			const chars = Array.from(syllable);
+			if (chars.length < 2 || chars.length > 3) {
+				throw new Error(
+					"Invalid input: Hangul syllables must consist of 2 or 3 characters.",
+				);
 			}
-			// if (syllable.charAt(-1) === 'y') {
-			//   syllable = LATN_2_HANG_TABLE[syllable.slice(0, -1)] + 'ㅣ';
-			return [...result].map((char) => LATN_2_HANG_TABLE[char]).join("");
-		})
-		.map((syllable) => {
-			let result = syllable;
 
-			// console.log('syllable', syllable);
-			for (const [key, value] of Object.entries(HANG_VOWEL_COMBINATION_TABLE)) {
-				result = result.replace(key, value);
+			if (chars.includes("ㅱ")) {
+				return toComposedHangul(chars[0], chars[1], chars[2] ?? "");
 			}
-			// Convert vowel combinations
-			return result.replace(/ㅣㅣ/g, "ㅣ");
+
+			// Find the indices of initial, medial, (and final) components
+			const initialIndex = INITIALS[chars[0]];
+			const medialIndex = MEDIALS[chars[1]];
+			const finalIndex = chars.length === 3 ? FINALS[chars[2]] : 0;
+
+			if (
+				initialIndex === undefined ||
+				medialIndex === undefined ||
+				finalIndex === undefined
+			) {
+				throw new Error(
+					`Invalid input: Characters must be valid Hangul components. ${chars}`,
+				);
+			}
+
+			return String.fromCharCode(
+				0xac00 + (initialIndex * 21 + medialIndex) * 28 + finalIndex,
+			);
 		});
 
-	// console.log('convertedSyllables', convertedSyllables);
+		return hangulCharacters.join("");
+	}
 
-	const hangulCharacters = convertedSyllables.map((syllable) => {
-		// Record of initial consonants (choseong)
-
-		// Split the input into individual characters
-		const chars = Array.from(syllable);
-		if (chars.length < 2 || chars.length > 3) {
-			throw new Error(
-				"Invalid input: Hangul syllables must consist of 2 or 3 characters.",
-			);
-		}
-
-		if (chars.includes("ㅱ")) {
-			return toComposedHangul(chars[0], chars[1], chars[2] ?? "");
-		}
-
-		// Find the indices of initial, medial, (and final) components
-		const initialIndex = INITIALS[chars[0]];
-		const medialIndex = MEDIALS[chars[1]];
-		const finalIndex = chars.length === 3 ? FINALS[chars[2]] : 0;
-
-		if (
-			initialIndex === undefined ||
-			medialIndex === undefined ||
-			finalIndex === undefined
-		) {
-			throw new Error(
-				`Invalid input: Characters must be valid Hangul components. ${chars}`,
-			);
-		}
-
-		return String.fromCharCode(
-			0xac00 + (initialIndex * 21 + medialIndex) * 28 + finalIndex,
-		);
-	});
-
-	return hangulCharacters.join("");
+	const REGEX = /([\p{Script_Extensions=Latin}'’\-=]+)/u;
+	return latn
+		.split(REGEX)
+		.map((w) => (REGEX.test(w) ? convertWord(w) : w))
+		.join("");
 }
 
 /**
@@ -230,101 +240,111 @@ export function convertLatnToHang(latn: string): string {
  * @returns
  */
 export function convertHangToLatn(hang: string): string {
-	// Helper function to decompose a Hangul character
-	const decomposeHangul = (char: string) => {
-		const code = char.charCodeAt(0) - 0xac00;
-		const finalIndex = code % 28;
-		const medialIndex = ((code - finalIndex) / 28) % 21;
-		const initialIndex = ((code - finalIndex) / 28 - medialIndex) / 21;
-		return [initialIndex, medialIndex, finalIndex];
-	};
+	function convertWord(word: string): string {
+		// Helper function to decompose a Hangul character
+		const decomposeHangul = (char: string) => {
+			const code = char.charCodeAt(0) - 0xac00;
+			const finalIndex = code % 28;
+			const medialIndex = ((code - finalIndex) / 28) % 21;
+			const initialIndex = ((code - finalIndex) / 28 - medialIndex) / 21;
+			return [initialIndex, medialIndex, finalIndex];
+		};
 
-	// Reverse lookup tables
-	const reverseInitials = Object.fromEntries(
-		Object.entries(INITIALS).map(([k, v]) => [v, k]),
-	);
-	const reverseMedials = Object.fromEntries(
-		Object.entries(MEDIALS).map(([k, v]) => [v, k]),
-	);
-	const reverseFinals = Object.fromEntries(
-		Object.entries(FINALS).map(([k, v]) => [v, k]),
-	);
+		// Reverse lookup tables
+		const reverseInitials = Object.fromEntries(
+			Object.entries(INITIALS).map(([k, v]) => [v, k]),
+		);
+		const reverseMedials = Object.fromEntries(
+			Object.entries(MEDIALS).map(([k, v]) => [v, k]),
+		);
+		const reverseFinals = Object.fromEntries(
+			Object.entries(FINALS).map(([k, v]) => [v, k]),
+		);
 
-	const reverseJamoInitials = Object.fromEntries(
-		Object.entries(JAMO_INITIALS).map(([k, v]) => [v, k]),
-	);
-	const reverseJamoMedials = Object.fromEntries(
-		Object.entries(JAMO_MEDIALS).map(([k, v]) => [v, k]),
-	);
-	const reverseJamoFinals = Object.fromEntries(
-		Object.entries(JAMO_FINALS).map(([k, v]) => [v, k]),
-	);
+		const reverseJamoInitials = Object.fromEntries(
+			Object.entries(JAMO_INITIALS).map(([k, v]) => [v, k]),
+		);
+		const reverseJamoMedials = Object.fromEntries(
+			Object.entries(JAMO_MEDIALS).map(([k, v]) => [v, k]),
+		);
+		const reverseJamoFinals = Object.fromEntries(
+			Object.entries(JAMO_FINALS).map(([k, v]) => [v, k]),
+		);
 
-	// split hangul jamo group and hangul character
-	const clusters = hang.split(/([ᄀ-ᇿ]+|[가-힯])/).filter(Boolean);
+		// split hangul jamo group and hangul character
+		const clusters = word.split(/([ᄀ-ᇿ]+|[가-힯])/).filter(Boolean);
 
-	const decomposed = clusters.map((char) => {
-		// console.log('char', char);
-		// Decompose Hangul character
+		const decomposed = clusters.map((char) => {
+			// console.log('char', char);
+			// Decompose Hangul character
 
-		if (/[가-힯]/.test(char)) {
-			const [initialIndex, medialIndex, finalIndex] = decomposeHangul(char);
+			if (/[가-힯]/.test(char)) {
+				const [initialIndex, medialIndex, finalIndex] = decomposeHangul(char);
 
-			// Map decomposed indices to Latin characters
-			const initial = reverseInitials[initialIndex] || "";
-			const medial = reverseMedials[medialIndex] || "";
-			const final = reverseFinals[finalIndex] || "";
+				// Map decomposed indices to Latin characters
+				const initial = reverseInitials[initialIndex] || "";
+				const medial = reverseMedials[medialIndex] || "";
+				const final = reverseFinals[finalIndex] || "";
 
-			let result = initial + medial + final;
+				let result = initial + medial + final;
 
-			// console.log('hangulB', hangul);
-			for (const [key, value] of Object.entries(HANG_VOWEL_COMBINATION_TABLE)) {
-				result = result.replace(value, key);
+				// console.log('hangulB', hangul);
+				for (const [key, value] of Object.entries(
+					HANG_VOWEL_COMBINATION_TABLE,
+				)) {
+					result = result.replace(value, key);
+				}
+				// console.log('hangulA', hangul);
+
+				return result;
 			}
-			// console.log('hangulA', hangul);
 
-			return result;
-		}
+			let initial = "";
+			let medial = "";
+			let final = "";
 
-		let initial = "";
-		let medial = "";
-		let final = "";
-
-		for (const c of [...char]) {
-			if (reverseJamoInitials[c]) {
-				initial = reverseJamoInitials[c];
-			} else if (reverseJamoMedials[c]) {
-				medial = reverseJamoMedials[c];
-			} else if (reverseJamoFinals[c]) {
-				final = reverseJamoFinals[c];
+			for (const c of [...char]) {
+				if (reverseJamoInitials[c]) {
+					initial = reverseJamoInitials[c];
+				} else if (reverseJamoMedials[c]) {
+					medial = reverseJamoMedials[c];
+				} else if (reverseJamoFinals[c]) {
+					final = reverseJamoFinals[c];
+				}
 			}
-		}
 
-		return initial + medial + final;
-	});
-
-	const latin = decomposed
-		.map((hangul) => {
-			let result = hangul;
-
-			for (const [key, value] of Object.entries(LATN_2_HANG_TABLE)) {
-				result = result.replace(value, key);
-			}
-			return result;
-		})
-		.map((latn) => {
-			let result = latn;
-			// console.log('latn:', latn);
-
-			// ’iV -> yV
-			result = result.replace(/’i(?=[aeiou])/, "y");
-			// console.log('’iV->yV :', result);
-			// Vi -> Vy
-			result = result.replace(/(?<=[aeiou])i/, "y");
-			// console.log('Vi->Vy :', result);
-			return result;
+			return initial + medial + final;
 		});
 
-	// console.log('latin', latin);
-	return latin.join("").replace(/(?<![^aieou])’/g, "");
+		const latin = decomposed
+			.map((hangul) => {
+				let result = hangul;
+
+				for (const [key, value] of Object.entries(LATN_2_HANG_TABLE)) {
+					result = result.replace(value, key);
+				}
+				return result;
+			})
+			.map((latn) => {
+				let result = latn;
+				// console.log('latn:', latn);
+
+				// ’iV -> yV
+				result = result.replace(/’i(?=[aeiou])/, "y");
+				// console.log('’iV->yV :', result);
+				// Vi -> Vy
+				result = result.replace(/(?<=[aeiou])i/, "y");
+				// console.log('Vi->Vy :', result);
+				return result;
+			});
+
+		// console.log('latin', latin);
+		return latin.join("").replace(/(?<![^aieou])’/g, "");
+	}
+
+	const REGEX = /([\p{Script_Extensions=Hangul}]+)/u;
+	return hang
+		.split(REGEX)
+		.map((w) => (REGEX.test(w) ? convertWord(w) : w))
+		.join("");
 }
