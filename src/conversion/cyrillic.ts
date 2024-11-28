@@ -44,7 +44,7 @@ const ACCENTED_MAP: [string, string][] = [
  * @returns
  */
 export function convertLatnToCyrl(latn: string): string {
-	let result = clean(latn);
+	let result = clean(latn).normalize("NFD");
 
 	// Convert multi-character sequences first
 	const multiCharKeys = [
@@ -54,11 +54,12 @@ export function convertLatnToCyrl(latn: string): string {
 		"ye",
 		//'yi'
 	];
+
 	for (const key of multiCharKeys) {
 		const cyrl = LATN_2_CYRL_TABLE[key];
 		const cyrlUppercase = cyrl.toUpperCase();
 		const regex = new RegExp(key, "g");
-		const regexUppercase = new RegExp(key.toUpperCase(), "g");
+		const regexUppercase = new RegExp(key[0].toUpperCase() + key.slice(1), "g");
 		result = result.replace(regex, cyrl);
 		result = result.replace(regexUppercase, cyrlUppercase);
 	}
@@ -94,19 +95,21 @@ export function convertCyrlToLatn(cyrl: string): string {
 	let result = cyrl
 		.replace("ъ", "'")
 		// йV -> й’V
-		.replace(/й([аеиоуэюя])/g, "й’$1");
+		.replace(/й([аеиоуэюя])/gi, "й’$1");
 
 	// Assuming CYRL_2_LATN_TABLE is the reverse of LATN_2_CYRL_TABLE
 	const CYRL_2_LATN_TABLE = Object.fromEntries(
 		Object.entries(LATN_2_CYRL_TABLE).map(([key, value]) => [value, key]),
 	);
+
 	// Convert multi-character sequences first
-	const multiCharKeys = Object.keys(CYRL_2_LATN_TABLE).filter(
-		(key) => key.length > 1,
-	);
+	const multiCharKeys = Object.entries(CYRL_2_LATN_TABLE)
+		.filter(([_, value]) => value.length > 1)
+		.map(([key]) => key);
+
 	for (const key of multiCharKeys) {
 		const latn = CYRL_2_LATN_TABLE[key];
-		const latnUppercase = latn.toUpperCase();
+		const latnUppercase = latn[0].toUpperCase() + latn.slice(1);
 		const regex = new RegExp(key, "g");
 		const regexUppercase = new RegExp(key.toUpperCase(), "g");
 		result = result.replace(regex, latn);
@@ -128,7 +131,7 @@ export function convertCyrlToLatn(cyrl: string): string {
 		}
 	}
 
-	return result.replace("yi", "i");
+	return result.replace("yi", "i").normalize("NFC");
 }
 
 // export function convertCyrlToLatn(cyrl: string) {
