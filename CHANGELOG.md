@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added special processing for `yi` and `wu` during conversion.
+
 ### Fixed
 
 - Fixed array not empty for empty input.
+- Fixed typographic apostrophe not getting erased in syllable separation.
+- Fixed syllable division test cases and algorithm.
 
 ## [0.4.2] - 2024-11-28
 
