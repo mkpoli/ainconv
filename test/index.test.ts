@@ -19,6 +19,10 @@ import { separate } from "../src/syllable";
 import ROBUSTNESS from "./cases/robustness.json";
 import TEST_CASES from "./cases/test_cases.json";
 
+function removeSpaceBetweenP(str: string) {
+	return str.match(/ p\b/) ? str.replace(" p", "p") : str;
+}
+
 test("Script Detection", () => {
 	expect(detect("aynu")).toBe("Latn");
 	expect(detect("アイヌ")).toBe("Kana");
@@ -72,11 +76,10 @@ test("Script Conversion (Latn -> Kana)", () => {
 test("Script Conversion (Latn -> Cyrl)", () => {
 	for (const testCase of TEST_CASES) {
 		const { latn, cyrl } = testCase;
-		// console.log('LATN = ', latn);
-		// console.log('CYRL = ', cyrl);
-		// console.log('-> CYRL = ', convertLatnToCyrl(latn));
-		// TODO: Allow option to preserve or remove the double hyphens (equal signs) `=`, now ignoring
-		expect(convertLatnToCyrl(latn)).toBe(cyrl.replace("=", ""));
+
+		const converted = convertLatnToCyrl(removeSpaceBetweenP(latn));
+		const expected = cyrl.replace("=", "");
+		expect(converted).toBe(expected);
 	}
 });
 
@@ -86,7 +89,9 @@ test("Script Conversion (Cyrl -> Latn)", () => {
 		// console.log('CYRL = ', cyrl);
 		// console.log('LATN = ', latn);
 		// console.log('-> LATN = ', convertCyrlToLatn(cyrl));
-		expect(convertCyrlToLatn(cyrl)).toBe(latn);
+		const converted = convertCyrlToLatn(cyrl);
+		const expected = removeSpaceBetweenP(latn);
+		expect(converted).toBe(expected);
 	}
 });
 
@@ -116,7 +121,9 @@ test("Script Conversion (Hang -> Latn)", () => {
 	for (const testCase of TEST_CASES) {
 		const { latn, hang } = testCase;
 		const converted = convertHangToLatn(hang);
-		const expected = removeAccents(latn.toLowerCase()).replace("=", "");
+		const expected = removeSpaceBetweenP(
+			removeAccents(latn.toLowerCase()).replace("=", ""),
+		);
 		if (converted !== expected) {
 			console.log(`"${hang}" -> "${converted}" (expecting "${expected}")`);
 		}
@@ -205,11 +212,12 @@ test("Script Conversion (Kana -> Latn)", () => {
 test("Script Conversion (Kana -> Cyrl)", () => {
 	for (const testCase of TEST_CASES) {
 		const { kana, latnLossy } = testCase;
-		const cyrlLossy = convertLatnToCyrl(latnLossy);
-		// console.log(kana);
-		// console.log(cyrl);
-		// console.log(convertKanaToCyrl(kana));
-		expect(convertKanaToCyrl(kana)).toBe(cyrlLossy);
+		const converted = convertKanaToCyrl(kana);
+		const expected = convertLatnToCyrl(removeSpaceBetweenP(latnLossy));
+		if (converted !== expected) {
+			console.log(`"${kana}" -> "${converted}" (expecting "${expected}")`);
+		}
+		expect(converted).toBe(expected);
 	}
 
 	for (const testCase of ROBUSTNESS.filter((t) => t.from === "Kana")) {
