@@ -11,9 +11,11 @@ export function separate(latn: string): string[] {
 	const syllableMap: { [index: number]: number } = {};
 	let syllableCount = 1;
 
-	for (const [i, char] of [...latn].entries()) {
+	const cleanedLatn = latn.toLowerCase();
+
+	for (const [i, char] of [...cleanedLatn].entries()) {
 		if (VOWELS.includes(char)) {
-			if (i > 0 && CONSONANTS.includes(latn[i - 1])) {
+			if (i > 0 && CONSONANTS.includes(cleanedLatn[i - 1])) {
 				syllableMap[i - 1] = syllableCount;
 			}
 			syllableMap[i] = syllableCount;
@@ -22,7 +24,7 @@ export function separate(latn: string): string[] {
 	}
 
 	// Fill codas
-	for (let i = 0; i < latn.length; i++) {
+	for (let i = 0; i < cleanedLatn.length; i++) {
 		if (syllableMap[i] === undefined) {
 			syllableMap[i] = syllableMap[i - 1];
 		}
@@ -33,15 +35,17 @@ export function separate(latn: string): string[] {
 	let currentGroupId = 1;
 	let head = 0;
 
-	for (let i = 0; i < latn.length; i++) {
+	for (let i = 0; i < cleanedLatn.length; i++) {
 		if (syllableMap[i] !== currentGroupId) {
 			currentGroupId = syllableMap[i];
-			syllables.push(latn.slice(head, i));
+			syllables.push(cleanedLatn.slice(head, i));
 			head = i;
 		}
 	}
 
-	syllables.push(latn.slice(head));
+	syllables.push(cleanedLatn.slice(head));
 
-	return syllables.map((syllable) => syllable.replace(/['’]/g, ""));
+	return syllables
+		.map((syllable) => syllable.replace(/['’= ]/g, ""))
+		.filter(Boolean);
 }
