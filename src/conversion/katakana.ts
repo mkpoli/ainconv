@@ -460,6 +460,12 @@ const DIAGRAPHS: Record<string, string> = {
 	ウイ: "uy",
 };
 
+const SMALL_KATAKANA_CHARS =
+	Object.values(CODA_CONS).join("") +
+	Object.values(CODA_VARA)
+		.map((v) => Object.values(v).join(""))
+		.join("");
+
 /**
  * Convert Katakana script to Latin script.
  * @param kana The Katakana string to convert.
@@ -467,7 +473,6 @@ const DIAGRAPHS: Record<string, string> = {
  */
 export function convertKanaToLatn(kana: string): string {
 	function convertWord(word: string): string {
-		// console.log(new RegExp(`${Object.keys(DIAGRAPHS).join('|')}|(\\p{Script_Extensions=Katakana}\u309a?)`, 'u'));
 		return (
 			word
 				.replaceAll(
@@ -491,7 +496,9 @@ export function convertKanaToLatn(kana: string): string {
 				)
 				.split(
 					new RegExp(
-						`(${Object.keys(DIAGRAPHS).join("|")}|\\p{Script_Extensions=Katakana}\u309a?)`,
+						`(${Object.keys(DIAGRAPHS).join("|")}|\\p{Script_Extensions=Katakana}\u309a?)(?![${
+							SMALL_KATAKANA_CHARS
+						}])`,
 						"u",
 					),
 				)
