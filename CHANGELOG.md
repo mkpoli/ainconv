@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fix cyrillic diphthong 'Ю'-'Yu', 'Я'-'Ya', 'Ё'-'Yo', 'Е'-'Ye' conversion on uppercase.
+- Fixed cyrillic diphthong 'Ю'-'Yu', 'Я'-'Ya', 'Ё'-'Yo', 'Е'-'Ye' conversion on uppercase.
+- Fixed CVVC Katakana to Latin syllable separation (e.g. "アエイㇰラ" -> "ア|エ|イㇰ|ラ").
 
 ## [0.4.1] - 2024-11-28
 
