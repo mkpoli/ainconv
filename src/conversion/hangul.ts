@@ -1,5 +1,10 @@
 import { separate } from "../syllable";
-import { ACCENT_CONVERSION_TABLE, VOWELS, clean } from "./latin";
+import {
+	ACCENT_CONVERSION_TABLE,
+	VOWELS,
+	clean,
+	convertFromLatin,
+} from "./latin";
 
 const LATN_2_HANG_TABLE: Record<string, string> = {
 	a: "ㅏ",
@@ -242,11 +247,7 @@ export function convertLatnToHang(latn: string): string {
 		return hangulCharacters.join("");
 	}
 
-	const REGEX = /([\p{Script_Extensions=Latin}'’\-=]+)/u;
-	return latn
-		.split(REGEX)
-		.map((w) => (REGEX.test(w) ? convertWord(w) : w))
-		.join("");
+	return convertFromLatin(latn, convertWord);
 }
 
 /**
