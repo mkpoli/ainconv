@@ -53,7 +53,9 @@ Commit messages need to start with a capital letter and a verb in the present te
 
 - [ ] Commit all changes in working tree.
 - [ ] Check and build the package. (`bun test` and `bun run build`)
-- [ ] Bump, commit and tag the version by `bun run bump`.
+- [ ] Bump the version by `bun run bump`.
+- [ ] Update `CHANGELOG.md` by running `bun run changelog`.
+- [ ] Commit and tag the changes by running `bun run commit`.
 - [ ] Push the changes to the remote repository. (`git push --follow-tags`)
 - [ ] Create a new release on GitHub with the release notes from `CHANGELOG.md`.
-- [ ] Publish the package to npm. (`npm publish`)
+- [ ] Publish the package to npm. (`bun run publish`)
