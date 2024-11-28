@@ -8,7 +8,7 @@ import { separate } from "../syllable";
 
 // const AINU_LATN_WORD_PATTERN = /([a-zA-Z\p’'\-=∅ø]+)/;
 
-import { ACCENT_CONVERSION_TABLE, clean } from "./latin";
+import { ACCENT_CONVERSION_TABLE, clean, convertFromLatin } from "./latin";
 
 const CONVERSION_TABLE = {
 	a: "ア",
@@ -446,11 +446,7 @@ export function convertLatnToKana(latn: string): string {
 		// TODO: Make configurable
 	}
 
-	const REGEX = /([\p{Script_Extensions=Latin}'’\-=]+(?: +p\b)?)/u;
-	return latn
-		.split(REGEX)
-		.map((w) => (REGEX.test(w) ? convertWord(w.replace(" ", "")) : w))
-		.join("");
+	return convertFromLatin(latn, convertWord);
 }
 
 const DIAGRAPHS: Record<string, string> = {

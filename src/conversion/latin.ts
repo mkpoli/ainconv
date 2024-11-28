@@ -17,3 +17,16 @@ export const ACCENT_CONVERSION_TABLE: Record<string, string> = {
 export function clean(text: string) {
 	return text.replace(/[-=.,]/gu, "").normalize("NFKC");
 }
+
+export const MATCH_LATIN_WORD =
+	/([\p{Script_Extensions=Latin}'’\-=]+(?: p\b)?)/u;
+
+export function convertFromLatin(
+	latn: string,
+	convertWord: (word: string) => string,
+) {
+	return latn
+		.split(MATCH_LATIN_WORD)
+		.map((w) => (MATCH_LATIN_WORD.test(w) ? convertWord(w) : w))
+		.join("");
+}
