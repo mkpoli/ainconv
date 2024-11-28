@@ -22,10 +22,20 @@ try {
 	process.exit(1);
 }
 
+if (!changelog.includes("Unreleased")) {
+	console.error("[update-changelog] No 'Unreleased' section found");
+	process.exit(1);
+}
+
 const replaced = changelog.replace(
-	"## [Unreleased]",
+	/## *\[Unreleased\].*/g,
 	`## [${currentVersion}] - ${new Date().toISOString().split("T")[0]}`,
 );
+
+if (replaced === changelog) {
+	console.info("[update-changelog] No required changes found");
+	process.exit(0);
+}
 
 const diffs = diffLines(changelog, replaced);
 if (diffs.length === 0) {
