@@ -46,6 +46,11 @@ export function separate(latn: string): string[] {
 	syllables.push(cleanedLatn.slice(head));
 
 	return syllables
-		.map((syllable) => syllable.replace(/['’= ]/g, ""))
+		.map((syllable) =>
+			syllable
+				.replace(/['’= ]/g, "")
+				.replace(/^yi/, "i")
+				.replace(/^wu/, "u"),
+		)
 		.filter(Boolean);
 }

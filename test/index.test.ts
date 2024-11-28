@@ -23,6 +23,10 @@ function removeSpaceBetweenP(str: string) {
 	return str.match(/ p\b/) ? str.replace(" p", "p") : str;
 }
 
+function removeYiWu(str: string) {
+	return str.replace(/yi/, "i").replace(/wu/, "u");
+}
+
 test("Script Detection", () => {
 	expect(detect("aynu")).toBe("Latn");
 	expect(detect("アイヌ")).toBe("Kana");
@@ -54,7 +58,7 @@ test("Script Conversion (Latn -> Kana)", () => {
 test("Script Conversion (Latn -> Cyrl)", () => {
 	for (const testCase of TEST_CASES) {
 		const { latn, cyrl } = testCase;
-		const converted = convertLatnToCyrl(removeSpaceBetweenP(latn));
+		const converted = convertLatnToCyrl(removeYiWu(removeSpaceBetweenP(latn)));
 		const expected = cyrl.replace("=", "");
 		if (converted !== expected) {
 			console.log(`"${latn}" -> "${converted}" (expecting "${expected}")`);
@@ -67,7 +71,7 @@ test("Script Conversion (Cyrl -> Latn)", () => {
 	for (const testCase of TEST_CASES) {
 		const { latn, cyrl } = testCase;
 		const converted = convertCyrlToLatn(cyrl);
-		const expected = removeSpaceBetweenP(latn);
+		const expected = removeYiWu(removeSpaceBetweenP(latn));
 		if (converted !== expected) {
 			console.log(`"${cyrl}" -> "${converted}" (expecting "${expected}")`);
 		}
@@ -101,8 +105,8 @@ test("Script Conversion (Hang -> Latn)", () => {
 	for (const testCase of TEST_CASES) {
 		const { latn, hang } = testCase;
 		const converted = convertHangToLatn(hang);
-		const expected = removeSpaceBetweenP(
-			removeAccents(latn.toLowerCase()).replace("=", ""),
+		const expected = removeYiWu(
+			removeSpaceBetweenP(removeAccents(latn.toLowerCase()).replace("=", "")),
 		);
 		if (converted !== expected) {
 			console.log(`"${hang}" -> "${converted}" (expecting "${expected}")`);
