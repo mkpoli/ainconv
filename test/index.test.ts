@@ -33,32 +33,10 @@ test("Script Detection", () => {
 });
 
 test("Syllable Separation", () => {
-	expect(separate("aynu")).toEqual(["ay", "nu"]);
-	expect(separate("itak")).toEqual(["i", "tak"]);
-	expect(separate("aynuitak")).toEqual(["ay", "nu", "i", "tak"]);
-	expect(separate("sinep")).toEqual(["si", "nep"]);
-	expect(separate("ruunpe")).toEqual(["ru", "un", "pe"]);
-	expect(separate("pekanke")).toEqual(["pe", "kan", "ke"]);
-	expect(separate("eramuskare")).toEqual(["e", "ra", "mus", "ka", "re"]);
-	expect(separate("hioy'oy")).toEqual(["hi", "oy", "oy"]);
-	expect(separate("irankarapte")).toEqual(["i", "ran", "ka", "rap", "te"]);
-	expect(separate("iyayiraykere")).toEqual([
-		"i",
-		"ya",
-		"yi",
-		"ray",
-		"ke",
-		"re",
-	]);
-	expect(separate("keyaykosiramsuypa")).toEqual([
-		"ke",
-		"yay",
-		"ko",
-		"si",
-		"ram",
-		"suy",
-		"pa",
-	]);
+	for (const testCase of TEST_CASES) {
+		const { latn, syllables } = testCase;
+		expect(separate(latn)).toEqual(syllables);
+	}
 });
 
 test("Script Conversion (Latn -> Kana)", () => {
