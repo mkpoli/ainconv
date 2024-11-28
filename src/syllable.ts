@@ -6,6 +6,8 @@ import { CONSONANTS, VOWELS } from "./conversion/latin";
  * @returns An array of syllables.
  */
 export function separate(latn: string): string[] {
+	if (!latn) return [];
+
 	const syllableMap: { [index: number]: number } = {};
 	let syllableCount = 1;
 
