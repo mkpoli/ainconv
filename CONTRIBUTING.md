@@ -58,4 +58,4 @@ Commit messages need to start with a capital letter and a verb in the present te
 - [ ] Commit and tag the changes by running `bun run commit`.
 - [ ] Push the changes to the remote repository. (`git push --follow-tags`)
 - [ ] Create a new release on GitHub with the release notes from `CHANGELOG.md`.
-- [ ] Publish the package to npm. (`bun run publish`)
+- [ ] Publish the package to npm. (`bun publish`)

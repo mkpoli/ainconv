@@ -52,8 +52,7 @@
 		"check:fix": "biome check --write",
 		"bump": "bumpp",
 		"changelog": "bun scripts/update-changelog.ts",
-		"commit": "bun scripts/commit-and-tag.ts",
-		"publish": "bun publish"
+		"commit": "bun scripts/commit-and-tag.ts"
 	},
 	"source": "src/index.ts",
 	"type": "module",
