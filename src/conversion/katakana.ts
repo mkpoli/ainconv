@@ -446,10 +446,10 @@ export function convertLatnToKana(latn: string): string {
 		// TODO: Make configurable
 	}
 
-	const REGEX = /([\p{Script_Extensions=Latin}'’\-=]+)/u;
+	const REGEX = /([\p{Script_Extensions=Latin}'’\-=]+(?: +p\b)?)/u;
 	return latn
 		.split(REGEX)
-		.map((w) => (REGEX.test(w) ? convertWord(w) : w))
+		.map((w) => (REGEX.test(w) ? convertWord(w.replace(" ", "")) : w))
 		.join("");
 }
 
