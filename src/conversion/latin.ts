@@ -27,6 +27,8 @@ export function convertFromLatin(
 ) {
 	return latn
 		.split(MATCH_LATIN_WORD)
-		.map((w) => (MATCH_LATIN_WORD.test(w) ? convertWord(w) : w))
+		.map((w) =>
+			MATCH_LATIN_WORD.test(w) ? convertWord(w.replace(" ", "")) : w,
+		)
 		.join("");
 }
