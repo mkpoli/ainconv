@@ -48,3 +48,5 @@ console.info(
 		"Unreleased",
 	)} replaced by version ${chalk.green(currentVersion)}`,
 );
+
+process.exit(0);
