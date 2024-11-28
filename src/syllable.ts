@@ -43,5 +43,5 @@ export function separate(latn: string): string[] {
 
 	syllables.push(latn.slice(head));
 
-	return syllables.map((syllable) => syllable.replace("'", ""));
+	return syllables.map((syllable) => syllable.replace(/['’]/g, ""));
 }
