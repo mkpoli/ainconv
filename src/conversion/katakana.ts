@@ -352,6 +352,10 @@ export function convertLatnToKana(latn: string): string {
 	function convertWord(word: string): string {
 		const cleanedLatn = clean(word).toLowerCase();
 
+		if (cleanedLatn === "p") {
+			return "ㇷ゚";
+		}
+
 		const syllables = separate(cleanedLatn);
 		let result = syllables
 			.map((syllable, index): string => {

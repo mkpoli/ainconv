@@ -166,6 +166,10 @@ export function convertLatnToHang(latn: string): string {
 			return "";
 		}
 
+		if (cleanedLatn === "p") {
+			return "ㅂ";
+		}
+
 		// TODO: Separate by word boundaries
 
 		// Separate by syllables
@@ -263,6 +267,10 @@ export function convertLatnToHang(latn: string): string {
  */
 export function convertHangToLatn(hang: string): string {
 	function convertWord(word: string): string {
+		if (word === "ㅂ") {
+			return "p";
+		}
+
 		// Helper function to decompose a Hangul character
 		const decomposeHangul = (char: string) => {
 			const code = char.charCodeAt(0) - 0xac00;
