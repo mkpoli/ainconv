@@ -64,21 +64,23 @@ test("Syllable Separation", () => {
 test("Script Conversion (Latn -> Kana)", () => {
 	for (const testCase of TEST_CASES) {
 		const { latn, kana } = testCase;
-		// console.log('LATN = ', latn);
-		// console.log('KANA = ', kana);
-		// console.log('-> KANA = ', convertLatnToKana(latn));
-		expect(convertLatnToKana(latn)).toBe(
-			kana.replace("ㇰカ", "ッカ"), // TODO: A=kor itak for now
-		);
+		const converted = convertLatnToKana(latn);
+		const expected = kana.replace("ㇰカ", "ッカ");
+		if (converted !== expected) {
+			console.log(`"${latn}" -> "${converted}" (expecting "${expected}")`);
+		}
+		expect(converted).toBe(expected);
 	}
 });
 
 test("Script Conversion (Latn -> Cyrl)", () => {
 	for (const testCase of TEST_CASES) {
 		const { latn, cyrl } = testCase;
-
 		const converted = convertLatnToCyrl(removeSpaceBetweenP(latn));
 		const expected = cyrl.replace("=", "");
+		if (converted !== expected) {
+			console.log(`"${latn}" -> "${converted}" (expecting "${expected}")`);
+		}
 		expect(converted).toBe(expected);
 	}
 });
@@ -86,11 +88,11 @@ test("Script Conversion (Latn -> Cyrl)", () => {
 test("Script Conversion (Cyrl -> Latn)", () => {
 	for (const testCase of TEST_CASES) {
 		const { latn, cyrl } = testCase;
-		// console.log('CYRL = ', cyrl);
-		// console.log('LATN = ', latn);
-		// console.log('-> LATN = ', convertCyrlToLatn(cyrl));
 		const converted = convertCyrlToLatn(cyrl);
 		const expected = removeSpaceBetweenP(latn);
+		if (converted !== expected) {
+			console.log(`"${cyrl}" -> "${converted}" (expecting "${expected}")`);
+		}
 		expect(converted).toBe(expected);
 	}
 });
@@ -168,10 +170,12 @@ test("Script Conversion (Hang -> Cyrl)", () => {
 test("Script Conversion (Cyrl -> Hang)", () => {
 	for (const testCase of TEST_CASES) {
 		const { hang, cyrl } = testCase;
-		// console.log(cyrl);
-		// console.log(hang);
-		// console.log(convertCyrlToHang(cyrl));
-		expect(convertCyrlToHang(cyrl)).toBe(hang);
+		const converted = convertCyrlToHang(cyrl);
+		const expected = hang;
+		if (converted !== expected) {
+			console.log(`"${cyrl}" -> "${converted}" (expecting "${hang}")`);
+		}
+		expect(converted).toBe(expected);
 	}
 });
 
@@ -197,10 +201,12 @@ test("Script Conversion (Hang -> Kana)", () => {
 test("Script Conversion (Kana -> Latn)", () => {
 	for (const testCase of TEST_CASES) {
 		const { kana, latnLossy } = testCase;
-		// console.log('KANA = ', kana);
-		// console.log('LATN = ', latnLossy);
-		// console.log('-> LATN = ', convertKanaToLatn(kana));
-		expect(convertKanaToLatn(kana)).toBe(latnLossy.toLowerCase());
+		const converted = convertKanaToLatn(kana);
+		const expected = latnLossy.toLowerCase();
+		if (converted !== expected) {
+			console.log(`"${kana}" -> "${converted}" (expecting "${expected}")`);
+		}
+		expect(converted).toBe(expected);
 	}
 
 	for (const testCase of ROBUSTNESS.filter((t) => t.from === "Kana")) {
@@ -229,11 +235,12 @@ test("Script Conversion (Kana -> Cyrl)", () => {
 test("Script Conversion (Kana -> Hang)", () => {
 	for (const testCase of TEST_CASES) {
 		const { kana, latnLossy } = testCase;
-		const hangLossy = convertLatnToHang(latnLossy);
-		// console.log(kana);
-		// console.log(hang);
-		// console.log(convertKanaToHang(kana));
-		expect(convertKanaToHang(kana)).toBe(hangLossy);
+		const converted = convertKanaToHang(kana);
+		const expected = convertLatnToHang(latnLossy);
+		if (converted !== expected) {
+			console.log(`"${kana}" -> "${converted}" (expecting "${expected}")`);
+		}
+		expect(converted).toBe(expected);
 	}
 
 	for (const testCase of ROBUSTNESS.filter((t) => t.from === "Kana")) {
