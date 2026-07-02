@@ -55,6 +55,23 @@ test("Script Conversion (Latn -> Kana)", () => {
 	}
 });
 
+test("Script Conversion (Latn -> Kana) with options", () => {
+	for (const testCase of TEST_CASES) {
+		for (const variant of (
+			testCase as { variants?: { options: object; kana: string }[] }
+		).variants ?? []) {
+			const converted = convertLatnToKana(testCase.latn, variant.options);
+			const expected = variant.kana.replace("ㇰカ", "ッカ");
+			if (converted !== expected) {
+				console.log(
+					`"${testCase.latn}" ${JSON.stringify(variant.options)} -> "${converted}" (expecting "${expected}")`,
+				);
+			}
+			expect(converted).toBe(expected);
+		}
+	}
+});
+
 test("Script Conversion (Latn -> Cyrl)", () => {
 	for (const testCase of TEST_CASES) {
 		const { latn, cyrl } = testCase;
