@@ -131,7 +131,12 @@ const CODA_VARA = {
 	},
 } as const;
 
-export const GEMINATION_TABLE = {
+const VARIANT_TABLE = {
+	// "ト゚": ["ツ゚", "トゥ"],
+	ㇴ: ["ン"],
+	ヱ: ["ウェ"],
+	ヰ: ["ウィ"],
+	ヲ: ["ウォ"],
 	ㇷ゚パ: ["ッパ"],
 	ㇷ゚ピ: ["ッピ"],
 	ㇷ゚ペ: ["ッペ"],
@@ -142,15 +147,6 @@ export const GEMINATION_TABLE = {
 	ㇰケ: ["ッケ"],
 	ㇰク: ["ック"],
 	ㇰコ: ["ッコ"],
-} as const;
-
-const VARIANT_TABLE = {
-	// "ト゚": ["ツ゚", "トゥ"],
-	ㇴ: ["ン"],
-	ヱ: ["ウェ"],
-	ヰ: ["ウィ"],
-	ヲ: ["ウォ"],
-	...GEMINATION_TABLE,
 	ィ: ["イ"],
 	ゥ: ["ウ"],
 	// ㇻ: ['ㇽ'],
