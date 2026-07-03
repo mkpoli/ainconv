@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import { GEMINATION_TABLE } from "../src/conversion/katakana";
 import {
 	convertCyrlToHang,
 	convertCyrlToKana,
@@ -27,6 +28,14 @@ function removeYiWu(str: string) {
 	return str.replace(/yi/, "i").replace(/wu/, "u");
 }
 
+function normalizeGemination(kana: string) {
+	let normalized = kana;
+	for (const [variant, replacements] of Object.entries(GEMINATION_TABLE)) {
+		normalized = normalized.replaceAll(variant, replacements[0]);
+	}
+	return normalized;
+}
+
 test("Script Detection", () => {
 	expect(detect("aynu")).toBe("Latn");
 	expect(detect("アイヌ")).toBe("Kana");
@@ -47,7 +56,7 @@ test("Script Conversion (Latn -> Kana)", () => {
 	for (const testCase of TEST_CASES) {
 		const { latn, kana } = testCase;
 		const converted = convertLatnToKana(latn);
-		const expected = kana.replace("ㇰカ", "ッカ");
+		const expected = normalizeGemination(kana);
 		if (converted !== expected) {
 			console.log(`"${latn}" -> "${converted}" (expecting "${expected}")`);
 		}
@@ -124,7 +133,7 @@ test("Script Conversion (Cyrl -> Kana)", () => {
 	for (const testCase of TEST_CASES) {
 		const { kana, cyrl } = testCase;
 		const converted = convertCyrlToKana(cyrl);
-		const expected = kana.replace("ㇰカ", "ッカ");
+		const expected = normalizeGemination(kana);
 		if (converted !== expected) {
 			console.log(`"${cyrl}" -> "${converted}" (expecting "${kana}")`);
 		}
@@ -165,7 +174,7 @@ test("Script Conversion (Hang -> Kana)", () => {
 	for (const testCase of TEST_CASES) {
 		const { kana, hang } = testCase;
 		const converted = convertHangToKana(hang);
-		const expected = kana.replace("ㇰカ", "ッカ");
+		const expected = normalizeGemination(kana);
 		if (converted !== expected) {
 			console.log(`"${hang}" -> "${converted}" (expecting "${expected}")`);
 		}
@@ -174,7 +183,7 @@ test("Script Conversion (Hang -> Kana)", () => {
 
 	for (const testCase of ROBUSTNESS.filter((t) => t.from === "Hang")) {
 		const { Hang, Kana } = testCase;
-		expect(convertHangToKana(Hang)).toBe(Kana.replace("ㇰカ", "ッカ"));
+		expect(convertHangToKana(Hang)).toBe(normalizeGemination(Kana));
 	}
 });
 
