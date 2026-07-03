@@ -153,7 +153,7 @@ export interface KanaConversionOptions {
 }
 
 /** Gemination normalization, always applied (not user-configurable). */
-const GEMINATION_TABLE = {
+export const GEMINATION_TABLE = {
 	ㇷ゚パ: "ッパ",
 	ㇷ゚ピ: "ッピ",
 	ㇷ゚ペ: "ッペ",
