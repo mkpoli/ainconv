@@ -131,28 +131,39 @@ const CODA_VARA = {
 	},
 } as const;
 
-const VARIANT_TABLE = {
-	// "ト゚": ["ツ゚", "トゥ"],
-	ㇴ: ["ン"],
-	ヱ: ["ウェ"],
-	ヰ: ["ウィ"],
-	ヲ: ["ウォ"],
-	ㇷ゚パ: ["ッパ"],
-	ㇷ゚ピ: ["ッピ"],
-	ㇷ゚ペ: ["ッペ"],
-	ㇷ゚プ: ["ップ"],
-	ㇷ゚ポ: ["ッポ"],
-	ㇰカ: ["ッカ"],
-	ㇰキ: ["ッキ"],
-	ㇰケ: ["ッケ"],
-	ㇰク: ["ック"],
-	ㇰコ: ["ッコ"],
-	ィ: ["イ"],
-	ゥ: ["ウ"],
-	// ㇻ: ['ㇽ'],
-	// ㇼ: ['ㇽ'],
-	// ㇾ: ['ㇽ'],
-	// ㇿ: ['ㇽ'],
+/**
+ * Options controlling how romanized Ainu is rendered into Katakana. Each flag,
+ * when `true`, keeps a compact kana instead of spelling it out; all default to
+ * `false` (the spelled-out form). Mirrors the shared catalog in ainconv-tests
+ * (`options.schema.json`).
+ */
+export interface KanaConversionOptions {
+	/** Keep ヰ (wi) instead of spelling it out as ウィ. */
+	useWi?: boolean;
+	/** Keep ヱ (we) instead of spelling it out as ウェ. */
+	useWe?: boolean;
+	/** Keep ヲ (wo) instead of spelling it out as ウォ. */
+	useWo?: boolean;
+	/** Keep the small ィ for the -y coda instead of イ. */
+	useSmallI?: boolean;
+	/** Keep the small ゥ for the -w coda instead of ウ. */
+	useSmallU?: boolean;
+	/** Keep ㇴ for the -n coda instead of ン. */
+	useSmallN?: boolean;
+}
+
+/** Gemination normalization, always applied (not user-configurable). */
+const GEMINATION_TABLE = {
+	ㇷ゚パ: "ッパ",
+	ㇷ゚ピ: "ッピ",
+	ㇷ゚ペ: "ッペ",
+	ㇷ゚プ: "ップ",
+	ㇷ゚ポ: "ッポ",
+	ㇰカ: "ッカ",
+	ㇰキ: "ッキ",
+	ㇰケ: "ッケ",
+	ㇰク: "ック",
+	ㇰコ: "ッコ",
 } as const;
 
 const HALF_WIDTH_KATAKANA_TABLE = {
@@ -348,7 +359,10 @@ const NON_COMBINING_MODIFIERS = {
  * @param latn The Latin script string to convert.
  * @returns The Katakana script string.
  */
-export function convertLatnToKana(latn: string): string {
+export function convertLatnToKana(
+	latn: string,
+	options: KanaConversionOptions = {},
+): string {
 	function convertWord(word: string): string {
 		const cleanedLatn = clean(word).toLowerCase();
 
@@ -441,13 +455,21 @@ export function convertLatnToKana(latn: string): string {
 			})
 			.join("");
 
-		// Postprocess
-		for (const [variant, replacement] of Object.entries(VARIANT_TABLE)) {
-			result = result.replaceAll(variant, replacement[0]);
+		// Postprocess: always normalize gemination, then expand each compact kana
+		// to its spelled-out form unless the caller opted to keep it. Smalls run
+		// before the w-series so the spelled-out ウィ/ウェ/ウォ digraphs keep their
+		// small kana.
+		for (const [compact, replacement] of Object.entries(GEMINATION_TABLE)) {
+			result = result.replaceAll(compact, replacement);
 		}
+		if (!options.useSmallI) result = result.replaceAll("ィ", "イ");
+		if (!options.useSmallU) result = result.replaceAll("ゥ", "ウ");
+		if (!options.useSmallN) result = result.replaceAll("ㇴ", "ン");
+		if (!options.useWe) result = result.replaceAll("ヱ", "ウェ");
+		if (!options.useWi) result = result.replaceAll("ヰ", "ウィ");
+		if (!options.useWo) result = result.replaceAll("ヲ", "ウォ");
 
 		return result;
-		// TODO: Make configurable
 	}
 
 	return convertFromLatin(latn, convertWord);

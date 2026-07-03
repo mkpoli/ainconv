@@ -1,4 +1,5 @@
 import {
+	type KanaConversionOptions,
 	convertCyrlToHang,
 	convertCyrlToKana,
 	convertCyrlToLatn,
@@ -13,6 +14,8 @@ import {
 	convertLatnToKana,
 } from "./convert";
 import { separate } from "./syllable";
+
+export type { KanaConversionOptions };
 
 export type Script = "Kana" | "Latn" | "Cyrl" | "Hang";
 

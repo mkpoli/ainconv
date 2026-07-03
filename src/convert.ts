@@ -1,6 +1,12 @@
 import { convertCyrlToLatn, convertLatnToCyrl } from "./conversion/cyrillic";
 import { convertHangToLatn, convertLatnToHang } from "./conversion/hangul";
-import { convertKanaToLatn, convertLatnToKana } from "./conversion/katakana";
+import {
+	type KanaConversionOptions,
+	convertKanaToLatn,
+	convertLatnToKana,
+} from "./conversion/katakana";
+
+export type { KanaConversionOptions };
 
 export {
 	convertHangToLatn,
@@ -23,10 +29,14 @@ export function convertKanaToCyrl(kana: string): string {
 /**
  * Convert from Cyrillic script to Kana script.
  * @param cyrl The Cyrillic string to convert.
+ * @param options Katakana rendering options (see {@link KanaConversionOptions}).
  * @returns The Kana string.
  */
-export function convertCyrlToKana(cyrl: string): string {
-	return convertLatnToKana(convertCyrlToLatn(cyrl));
+export function convertCyrlToKana(
+	cyrl: string,
+	options: KanaConversionOptions = {},
+): string {
+	return convertLatnToKana(convertCyrlToLatn(cyrl), options);
 }
 
 /**
@@ -50,10 +60,14 @@ export function convertCyrlToHang(cyrl: string): string {
 /**
  * Convert from Hangul script to Kana script.
  * @param hang The Hangul string to convert.
+ * @param options Katakana rendering options (see {@link KanaConversionOptions}).
  * @returns The Kana string.
  */
-export function convertHangToKana(hang: string): string {
-	return convertLatnToKana(convertHangToLatn(hang));
+export function convertHangToKana(
+	hang: string,
+	options: KanaConversionOptions = {},
+): string {
+	return convertLatnToKana(convertHangToLatn(hang), options);
 }
 
 /**
